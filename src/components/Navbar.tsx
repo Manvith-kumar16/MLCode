@@ -1,53 +1,127 @@
-import { Link, useLocation } from "react-router-dom";
-import { Brain, Trophy, User, LayoutDashboard, Code2, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Brain, Trophy, User, LayoutDashboard, Code2, Menu, X, Search, Bell, Flame } from "lucide-react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const navItems = [
   { path: "/problems", label: "Problems", icon: Code2 },
   { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { path: "/leaderboard", label: "Leaderboard", icon: Trophy },
-  { path: "/profile", label: "Profile", icon: User },
 ];
 
 const Navbar = () => {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+  const [streak, setStreak] = useState(0);
+  const [avatar, setAvatar] = useState("");
+  const [name, setName] = useState("");
+
+  const fetchUserData = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    try {
+      const response = await fetch("http://localhost:5001/api/auth/me", {
+        headers: { "auth-token": token },
+      });
+      const data = await response.json();
+      if (response.ok) {
+        if (data.streak) setStreak(data.streak.current || 0);
+        setAvatar(data.avatar || "");
+        setName(data.name || "U");
+      }
+    } catch (error) {
+      console.error("Failed to fetch user data");
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+
+    const handleUserUpdate = () => fetchUserData();
+    window.addEventListener("userUpdated", handleUserUpdate);
+
+    return () => {
+      window.removeEventListener("userUpdated", handleUserUpdate);
+    };
+  }, [token]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
 
   return (
     <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2 font-bold text-lg">
-          <Brain className="h-6 w-6 text-primary" />
-          <span className="text-foreground">ML</span>
-          <span className="text-primary">Code</span>
-        </Link>
-
-        <div className="hidden md:flex items-center gap-1">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                }`}
-              >
-                <item.icon className="h-4 w-4" />
-                {item.label}
-              </Link>
-            );
-          })}
+        <div className="flex items-center gap-2 md:hidden">
+          <Link to="/" className="flex items-center gap-2">
+            <Brain className="h-6 w-6 text-primary" />
+            <span className="font-bold text-xl tracking-tight">
+              ML <span className="text-primary">Code</span>
+            </span>
+          </Link>
         </div>
 
-        <div className="hidden md:flex items-center gap-2">
-          <Button variant="ghost" size="sm" className="text-muted-foreground">
-            Sign In
-          </Button>
-          <Button size="sm">Get Started</Button>
+        {/* Desktop Navigation - Removed as it's now in Sidebar */}
+        <div className="hidden md:flex items-center gap-6">
+        </div>
+
+        <div className="hidden md:flex items-center gap-4">
+          {token ? (
+            <div className="flex items-center gap-4">
+              {/* Search Bar */}
+              <div className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search"
+                  className="pl-9 w-[200px] bg-muted/50 border-none focus-visible:ring-1"
+                />
+              </div>
+
+              {/* Notifications */}
+              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+                <Bell className="h-5 w-5" />
+              </Button>
+
+              {/* Streak */}
+              <div className="flex items-center gap-1 text-muted-foreground">
+                <Flame className={`h-5 w-5 ${streak > 0 ? "text-orange-500 fill-orange-500" : ""}`} />
+                <span className="font-medium">{streak}</span>
+              </div>
+
+              {/* Profile Avatar */}
+              <Link to="/profile">
+                <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold overflow-hidden border border-border">
+                  {avatar ? (
+                    <img src={avatar} alt="Profile" className="h-full w-full object-cover" />
+                  ) : (
+                    name.charAt(0).toUpperCase()
+                  )}
+                </div>
+              </Link>
+              <Button
+                size="sm"
+                onClick={handleLogout}
+                className="bg-red-500 hover:bg-red-600 text-white hover:text-white"
+              >
+                Logout
+              </Button>
+            </div>
+          ) : (
+            <>
+              <Link to="/signin">
+                <Button variant="ghost" size="sm" className="text-muted-foreground">
+                  Sign In
+                </Button>
+              </Link>
+              <Link to="/signup">
+                <Button size="sm">Get Started</Button>
+              </Link>
+            </>
+          )}
         </div>
 
         <button
@@ -71,6 +145,25 @@ const Navbar = () => {
               {item.label}
             </Link>
           ))}
+          {token ? (
+            <button
+              onClick={() => {
+                handleLogout();
+                setMobileOpen(false);
+              }}
+              className="flex w-full items-center gap-2 px-3 py-2 rounded-md text-sm bg-red-500 text-white hover:bg-red-600"
+            >
+              Logout
+            </button>
+          ) : (
+            <Link
+              to="/signin"
+              onClick={() => setMobileOpen(false)}
+              className="flex w-full items-center gap-2 px-3 py-2 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-accent"
+            >
+              Sign In
+            </Link>
+          )}
         </div>
       )}
     </nav>

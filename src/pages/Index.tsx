@@ -27,38 +27,51 @@ const Index = () => {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden pt-10">
         <div
-          className="absolute inset-0 opacity-40"
-          style={{ backgroundImage: `url(${heroBg})`, backgroundSize: "cover", backgroundPosition: "center" }}
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: `url(${heroBg})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            filter: "grayscale(100%)"
+          }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/60 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/0 via-background/80 to-background" />
 
-        <div className="relative mx-auto max-w-7xl px-4 py-24 sm:py-32 lg:py-40">
+        {/* Purple/Blue Glow Effect */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-[30%] left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-primary/20 blur-[100px] rounded-full opacity-50 pointer-events-none" />
+        </div>
+
+        <div className="relative mx-auto max-w-7xl px-4 py-24 sm:py-32 lg:py-40 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="max-w-3xl"
+            className="max-w-4xl mx-auto flex flex-col items-center"
           >
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm text-primary">
-              <Zap className="h-3.5 w-3.5" />
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary shadow-lg shadow-primary/10">
+              <Zap className="h-4 w-4" />
               The #1 Platform for ML Practice
             </div>
-            <h1 className="mb-6 text-5xl font-black leading-tight tracking-tight sm:text-6xl lg:text-7xl">
-              Master <span className="text-gradient">Machine Learning</span> Through Practice
+
+            <h1 className="mb-8 text-5xl font-black leading-tight tracking-tight sm:text-6xl lg:text-7xl bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-white/60">
+              Master <span className="text-primary">Machine Learning</span> <br /> Through Practice
             </h1>
-            <p className="mb-8 max-w-xl text-lg text-muted-foreground leading-relaxed">
+
+            <p className="mb-10 max-w-2xl text-lg sm:text-xl text-muted-foreground leading-relaxed">
               Solve real-world ML problems, get instant feedback with industry-standard metrics, and compete with practitioners worldwide.
             </p>
-            <div className="flex flex-wrap gap-3">
-              <Link to="/problems">
-                <Button size="lg" className="gap-2 text-base font-semibold px-8">
+
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+              <Link to="/problems" className="w-full sm:w-auto">
+                <Button size="lg" className="gap-2 text-base font-semibold px-8 h-12 w-full sm:w-auto shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all">
                   Start Practicing <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
-              <Link to="/leaderboard">
-                <Button variant="outline" size="lg" className="gap-2 text-base border-border/50 hover:bg-accent">
+              <Link to="/leaderboard" className="w-full sm:w-auto">
+                <Button variant="outline" size="lg" className="gap-2 text-base border-border/50 hover:bg-accent/50 h-12 w-full sm:w-auto backdrop-blur-sm">
                   View Leaderboard
                 </Button>
               </Link>
@@ -94,10 +107,10 @@ const Index = () => {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center mb-16 max-w-3xl mx-auto"
         >
-          <h2 className="text-3xl font-bold mb-3">Everything You Need to Excel in ML</h2>
-          <p className="text-muted-foreground max-w-lg mx-auto">A complete platform designed to take you from beginner to expert in machine learning.</p>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">Everything You Need to Excel</h2>
+          <p className="text-muted-foreground text-lg">A complete platform designed to take you from beginner to expert in machine learning.</p>
         </motion.div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -110,8 +123,8 @@ const Index = () => {
               transition={{ delay: i * 0.08 }}
               className="glass-card p-6 hover-lift group"
             >
-              <div className="mb-4 inline-flex items-center justify-center h-10 w-10 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
-                <f.icon className="h-5 w-5" />
+              <div className="mb-4 inline-flex items-center justify-center h-12 w-12 rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 shadow-sm group-hover:shadow-md group-hover:shadow-primary/20">
+                <f.icon className="h-6 w-6" />
               </div>
               <h3 className="font-semibold mb-2 text-foreground">{f.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
@@ -121,12 +134,13 @@ const Index = () => {
       </section>
 
       {/* CTA */}
-      <section className="mx-auto max-w-7xl px-4 pb-20">
-        <div className="glass-card p-10 text-center glow-border">
-          <h2 className="text-3xl font-bold mb-3">Ready to Level Up Your ML Skills?</h2>
-          <p className="text-muted-foreground mb-6 max-w-md mx-auto">Join thousands of ML engineers who practice daily on MLCode.</p>
+      <section className="mx-auto max-w-4xl px-4 pb-20">
+        <div className="glass-card p-10 sm:p-14 text-center glow-border flex flex-col items-center relative overflow-hidden">
+          <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">Ready to Level Up Your ML Skills?</h2>
+          <p className="text-muted-foreground mb-8 max-w-lg mx-auto text-lg">Join thousands of ML engineers who practice daily on MLCode.</p>
           <Link to="/problems">
-            <Button size="lg" className="gap-2 font-semibold px-8">
+            <Button size="lg" className="gap-2 font-semibold px-8 h-12 shadow-lg shadow-primary/20">
               Browse Problems <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>

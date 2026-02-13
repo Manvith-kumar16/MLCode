@@ -1,88 +1,286 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Trophy, Flame, Target, Calendar, Award } from "lucide-react";
-import { userStats } from "@/data/problems";
+import { Trophy, Flame, Target, Calendar, Award, Edit, MapPin, Link as LinkIcon, Github, Linkedin, Eye, MessageSquare, Star, CheckCircle2, Brain } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import SubmissionHeatmap from "@/components/SubmissionHeatmap";
 
-const badges = [
-  { name: "First Blood", desc: "Solve your first problem", earned: true },
-  { name: "Streak Master", desc: "7-day streak", earned: true },
-  { name: "ML Explorer", desc: "Try all categories", earned: false },
-  { name: "Speed Demon", desc: "Solve in under 5 min", earned: true },
-  { name: "Perfect Score", desc: "100% accuracy", earned: false },
-  { name: "Century Club", desc: "Solve 100 problems", earned: false },
+interface UserData {
+  _id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  rank: number;
+  points: number;
+  problemsSolved: {
+    easy: number;
+    medium: number;
+    hard: number;
+  };
+  badges: Array<{
+    name: string;
+    desc: string;
+    earned: boolean;
+  }>;
+  socials: {
+    github: string;
+    linkedin: string;
+    website: string;
+  };
+  streak: {
+    current: number;
+    lastActive: Date;
+  };
+  bio: string;
+  location: string;
+  createdAt: string;
+}
+
+const SYSTEM_BADGES = [
+  { name: "First Blood", desc: "Solve your first problem", icon: Trophy },
+  { name: "Streak Master", desc: "7-day streak", icon: Flame },
+  { name: "Algorithm Guru", desc: "Solve 100 hard problems", icon: Brain },
 ];
 
-const Profile = () => (
-  <div className="mx-auto max-w-4xl px-4 py-8">
-    {/* Profile header */}
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="glass-card p-6 mb-6"
-    >
-      <div className="flex items-center gap-5">
-        <div className="h-16 w-16 rounded-full bg-primary/20 flex items-center justify-center text-2xl font-bold text-primary">
-          M
-        </div>
-        <div>
-          <h1 className="text-xl font-bold">{userStats.username}</h1>
-          <p className="text-sm text-muted-foreground">ML Enthusiast • Joined Jan 2025</p>
-          <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1"><Target className="h-3 w-3" /> Rank #{userStats.rank}</span>
-            <span className="flex items-center gap-1"><Flame className="h-3 w-3 text-medium" /> {userStats.streak} day streak</span>
-            <span className="flex items-center gap-1"><Trophy className="h-3 w-3 text-primary" /> {userStats.points} pts</span>
-          </div>
-        </div>
-      </div>
-    </motion.div>
+import RecentSubmissions from "@/components/RecentSubmissions";
 
-    <div className="grid md:grid-cols-2 gap-6">
-      {/* Solve stats */}
-      <div className="glass-card p-5">
-        <h2 className="font-semibold text-sm mb-4">Problem Stats</h2>
-        <div className="flex items-center justify-center mb-4">
-          <div className="relative h-32 w-32">
-            <svg viewBox="0 0 36 36" className="h-32 w-32 -rotate-90">
-              <circle cx="18" cy="18" r="15.915" fill="none" stroke="hsl(220 14% 14%)" strokeWidth="3" />
-              <circle cx="18" cy="18" r="15.915" fill="none" stroke="hsl(142 71% 45%)" strokeWidth="3"
-                strokeDasharray={`${(userStats.easy.solved / userStats.easy.total) * 33.3} 100`} />
-              <circle cx="18" cy="18" r="15.915" fill="none" stroke="hsl(38 92% 50%)" strokeWidth="3"
-                strokeDasharray={`${(userStats.medium.solved / userStats.medium.total) * 33.3} 100`}
-                strokeDashoffset={`-${(userStats.easy.solved / userStats.easy.total) * 33.3}`} />
-              <circle cx="18" cy="18" r="15.915" fill="none" stroke="hsl(0 72% 51%)" strokeWidth="3"
-                strokeDasharray={`${(userStats.hard.solved / userStats.hard.total) * 33.3} 100`}
-                strokeDashoffset={`-${((userStats.easy.solved / userStats.easy.total) + (userStats.medium.solved / userStats.medium.total)) * 33.3}`} />
-            </svg>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center">
-                <span className="text-2xl font-bold">{userStats.solved}</span>
-                <span className="text-xs text-muted-foreground block">solved</span>
+const Profile = () => {
+  const [user, setUser] = useState<UserData | null>(null);
+  const [submissionStats, setSubmissionStats] = useState<{ date: string; count: number }[]>([]);
+  const [recentSubmissions, setRecentSubmissions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const response = await fetch("http://localhost:5001/api/auth/me", {
+          headers: {
+            "auth-token": token,
+          },
+        });
+        const data = await response.json();
+        if (response.ok) {
+          // Ensure nested objects exist
+          data.socials = data.socials || {};
+          data.streak = data.streak || { current: 0 };
+          data.bio = data.bio || "";
+          data.location = data.location || "";
+          data.problemsSolved = data.problemsSolved || { easy: 0, medium: 0, hard: 0 };
+          data.badges = data.badges || [];
+          setUser(data);
+
+          // Fetch submission stats using userId
+          if (data._id) {
+            const statsRes = await fetch(`http://localhost:5001/api/submissions/stats/${data._id}`, {
+              headers: { "auth-token": token }
+            });
+            if (statsRes.ok) {
+              const statsData = await statsRes.json();
+              setSubmissionStats(statsData.map((item: any) => ({ date: item._id, count: item.count })));
+            }
+
+            const subsRes = await fetch(`http://localhost:5001/api/submissions/user/${data._id}`, {
+              headers: { "auth-token": token }
+            });
+            if (subsRes.ok) {
+              const subsData = await subsRes.json();
+              setRecentSubmissions(subsData);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        toast.error("Failed to load profile");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  if (loading) return <div className="p-8 text-center">Loading profile...</div>;
+  if (!user) return <div className="p-8 text-center">Please sign in to view your profile.</div>;
+
+  const totalSolved = user.problemsSolved.easy + user.problemsSolved.medium + user.problemsSolved.hard;
+  const totalQuestions = 3125; // Mock total questions on platform
+
+  return (
+    <div className="mx-auto max-w-7xl px-4 py-8 grid lg:grid-cols-3 gap-8">
+      {/* Left Column - User Info */}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="space-y-6"
+      >
+        <div className="glass-card p-6 relative overflow-hidden">
+          <div className="flex flex-col items-center">
+            <div className="h-32 w-32 rounded-lg bg-primary/20 flex items-center justify-center text-5xl font-bold text-primary mb-4 relative group cursor-pointer overflow-hidden">
+              {user.avatar ? <img src={user.avatar} alt={user.name} className="h-full w-full object-cover" /> : user.name.charAt(0).toUpperCase()}
+            </div>
+            <h1 className="text-2xl font-bold">{user.name}</h1>
+            <p className="text-muted-foreground">@{user.name.toLowerCase().replace(/\s/g, '')}</p>
+            {user.bio && <p className="text-sm text-center mt-2 text-muted-foreground">{user.bio}</p>}
+
+            <div className="w-full mt-6 space-y-4">
+              <Button className="w-full" variant="outline" onClick={() => navigate("/edit-profile")}>Edit Profile</Button>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <MapPin className="h-4 w-4" /> {user.location || "Add Location"}
+              </div>
+              {user.socials?.website && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <LinkIcon className="h-4 w-4" /> <a href={user.socials.website} target="_blank" rel="noopener noreferrer" className="hover:text-primary truncate">{user.socials.website}</a>
+                </div>
+              )}
+              <div className="flex gap-4 mt-2">
+                {user.socials?.github && (
+                  <a href={user.socials.github} target="_blank" rel="noopener noreferrer">
+                    <Github className="h-5 w-5 text-muted-foreground hover:text-foreground cursor-pointer" />
+                  </a>
+                )}
+                {user.socials?.linkedin && (
+                  <a href={user.socials.linkedin} target="_blank" rel="noopener noreferrer">
+                    <Linkedin className="h-5 w-5 text-muted-foreground hover:text-foreground cursor-pointer" />
+                  </a>
+                )}
+              </div>
+
+              {/* Streak Display */}
+              <div className="flex items-center justify-center gap-2 bg-accent/30 p-2 rounded-lg w-full mt-4">
+                <Flame className={`h-5 w-5 ${user.streak.current > 0 ? "text-orange-500 fill-orange-500" : "text-muted-foreground"}`} />
+                <span className="font-semibold">Streak: {user.streak.current} Days</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 border-t border-border/50 pt-6">
+            <h3 className="font-semibold mb-4">Community Stats</h3>
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="flex items-center gap-2 text-muted-foreground"><Eye className="h-4 w-4" /> Views</span>
+                <span>0</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="flex items-center gap-2 text-muted-foreground"><CheckCircle2 className="h-4 w-4" /> Solutions</span>
+                <span>0</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="flex items-center gap-2 text-muted-foreground"><MessageSquare className="h-4 w-4" /> Discuss</span>
+                <span>0</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="flex items-center gap-2 text-muted-foreground"><Star className="h-4 w-4" /> Reputation</span>
+                <span>0</span>
               </div>
             </div>
           </div>
         </div>
-        <div className="flex justify-center gap-6 text-xs">
-          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-easy" /> Easy {userStats.easy.solved}/{userStats.easy.total}</span>
-          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-medium" /> Medium {userStats.medium.solved}/{userStats.medium.total}</span>
-          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-hard" /> Hard {userStats.hard.solved}/{userStats.hard.total}</span>
-        </div>
-      </div>
+      </motion.div>
 
-      {/* Badges */}
-      <div className="glass-card p-5">
-        <h2 className="font-semibold text-sm mb-4 flex items-center gap-2">
-          <Award className="h-4 w-4 text-primary" /> Badges
-        </h2>
-        <div className="grid grid-cols-2 gap-3">
-          {badges.map((b) => (
-            <div key={b.name} className={`p-3 rounded-lg border transition-colors ${b.earned ? "border-primary/30 bg-primary/5" : "border-border/30 bg-accent/30 opacity-50"}`}>
-              <p className="text-xs font-medium">{b.name}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{b.desc}</p>
+      {/* Right Column - Stats & Content */}
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="lg:col-span-2 space-y-6"
+      >
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Solved Problems */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="glass-card p-6"
+          >
+            <h3 className="font-semibold mb-6">Solved Problems</h3>
+            <div className="flex items-center gap-8">
+              <div className="relative h-32 w-32 flex items-center justify-center">
+                <div className="absolute inset-0 rounded-full border-4 border-muted/20"></div>
+                <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin-slow" style={{ clipPath: `inset(0 0 0 0)` }}></div>
+                <div className="text-center">
+                  <div className="text-3xl font-bold">{totalSolved}</div>
+                  <div className="text-xs text-muted-foreground">Solved</div>
+                </div>
+              </div>
+              <div className="flex-1 space-y-4">
+                <div className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-green-500">Easy</span>
+                    <span className="text-muted-foreground">{user.problemsSolved.easy} / 789</span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-muted/20">
+                    <div className="h-full rounded-full bg-green-500" style={{ width: `${(user.problemsSolved.easy / 789) * 100}%` }}></div>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-yellow-500">Medium</span>
+                    <span className="text-muted-foreground">{user.problemsSolved.medium} / 1632</span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-muted/20">
+                    <div className="h-full rounded-full bg-yellow-500" style={{ width: `${(user.problemsSolved.medium / 1632) * 100}%` }}></div>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-red-500">Hard</span>
+                    <span className="text-muted-foreground">{user.problemsSolved.hard} / 704</span>
+                  </div>
+                  <div className="h-2 w-full rounded-full bg-muted/20">
+                    <div className="h-full rounded-full bg-red-500" style={{ width: `${(user.problemsSolved.hard / 704) * 100}%` }}></div>
+                  </div>
+                </div>
+              </div>
             </div>
-          ))}
+          </motion.div>
+
+          {/* Badges */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="glass-card p-6"
+          >
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="font-semibold">Badges</h3>
+              <span className="text-xs text-muted-foreground">{user.badges.length}</span>
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              {SYSTEM_BADGES.map((badge, index) => {
+                const isEarned = user.badges.some(b => b.name === badge.name);
+                const BIcon = badge.icon;
+                return (
+                  <div key={index} className={`flex flex-col items-center justify-center p-4 rounded-lg border transition-all ${isEarned ? "bg-primary/10 border-primary/50" : "bg-muted/10 border-transparent opacity-50 grayscale"}`}>
+                    <BIcon className={`h-8 w-8 mb-2 ${isEarned ? "text-primary" : "text-muted-foreground"}`} />
+                    <span className="text-[10px] text-center font-medium">{badge.name}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </motion.div>
         </div>
-      </div>
+
+        {/* Heatmap Section */}
+        <div className="glass-card p-6 col-span-1 lg:col-span-3">
+          <h3 className="font-semibold mb-4">{new Date().getFullYear()} Submissions</h3>
+          <SubmissionHeatmap data={submissionStats} />
+        </div>
+
+        {/* Recent Submissions */}
+        <div className="glass-card p-6">
+          <h2 className="font-semibold mb-4">Recent Submissions</h2>
+          <div className="space-y-4">
+            <RecentSubmissions submissions={recentSubmissions} />
+          </div>
+        </div>
+
+      </motion.div>
     </div>
-  </div>
-);
+  );
+};
 
 export default Profile;
