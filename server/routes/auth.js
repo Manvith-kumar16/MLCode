@@ -1,7 +1,10 @@
+
 const router = require('express').Router();
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const verify = require('./verifyToken');
+const { OAuth2Client } = require('google-auth-library');
 
 // Register
 router.post('/signup', async (req, res) => {
@@ -56,8 +59,6 @@ router.post('/signin', async (req, res) => {
     }
 });
 
-const verify = require('./verifyToken');
-
 // Get Current User
 router.get('/me', verify, async (req, res) => {
     try {
@@ -107,6 +108,53 @@ router.get('/leaderboard', async (req, res) => {
         res.json(leaderboardData);
     } catch (err) {
         res.status(500).json({ message: "Server Error" });
+    }
+});
+
+// Google Sign In
+router.post('/google', async (req, res) => {
+    try {
+        const { token } = req.body;
+        const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const { name, email, picture } = ticket.getPayload();
+
+        let user = await User.findOne({ email });
+
+        if (!user) {
+            user = new User({
+                name,
+                email,
+                avatar: picture,
+                password: Math.random().toString(36).slice(-8), // Generate random password
+                socials: { github: "", linkedin: "", website: "" }
+            });
+            await user.save();
+        }
+
+        const payload = {
+            user: {
+                id: user.id
+            }
+        };
+
+        jwt.sign(
+            payload,
+            process.env.JWT_SECRET,
+            { expiresIn: 360000 },
+            (err, token) => {
+                if (err) throw err;
+                res.json({ token });
+            }
+        );
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
     }
 });
 
