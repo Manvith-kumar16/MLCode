@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { problems, type Difficulty, type MLTopic, type ProblemStatus } from "@/data/problems";
 import DifficultyBadge from "@/components/DifficultyBadge";
 
-const topics: MLTopic[] = ["Classification", "Regression", "NLP", "Computer Vision", "Clustering", "Deep Learning", "Feature Engineering", "Time Series"];
+const topics: MLTopic[] = ["Classification", "Regression", "NLP", "Computer Vision", "Clustering", "Deep Learning", "Feature Engineering", "Time Series", "Recommender Systems", "Reinforcement Learning"];
 const difficulties: Difficulty[] = ["Easy", "Medium", "Hard"];
 
 const StatusIcon = ({ status }: { status: ProblemStatus }) => {
@@ -51,9 +51,8 @@ const Problems = () => {
             <button
               key={d}
               onClick={() => setDiffFilter(d as any)}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                diffFilter === d ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:text-foreground border border-border/50"
-              }`}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${diffFilter === d ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:text-foreground border border-border/50"
+                }`}
             >
               {d}
             </button>
@@ -67,9 +66,8 @@ const Problems = () => {
           <button
             key={t}
             onClick={() => setTopicFilter(t as any)}
-            className={`px-2.5 py-1 rounded-full text-xs transition-colors ${
-              topicFilter === t ? "bg-primary/20 text-primary border border-primary/30" : "bg-card text-muted-foreground hover:text-foreground border border-border/50"
-            }`}
+            className={`px-2.5 py-1 rounded-full text-xs transition-colors ${topicFilter === t ? "bg-primary/20 text-primary border border-primary/30" : "bg-card text-muted-foreground hover:text-foreground border border-border/50"
+              }`}
           >
             {t}
           </button>

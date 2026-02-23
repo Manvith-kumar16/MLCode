@@ -1,6 +1,6 @@
 export type Difficulty = "Easy" | "Medium" | "Hard";
 export type ProblemStatus = "solved" | "attempted" | "unsolved";
-export type MLTopic = "Classification" | "Regression" | "NLP" | "Computer Vision" | "Clustering" | "Deep Learning" | "Feature Engineering" | "Time Series";
+export type MLTopic = "Classification" | "Regression" | "NLP" | "Computer Vision" | "Clustering" | "Deep Learning" | "Feature Engineering" | "Time Series" | "Recommender Systems" | "Reinforcement Learning";
 
 export interface Problem {
   id: number;
@@ -230,6 +230,146 @@ class UNet(nn.Module):
 
 def solution(train_loader, test_images):
     """Segment medical images."""
+    # Your code here
+    pass`,
+  },
+  {
+    id: 11,
+    title: "Dimensionality Reduction with PCA",
+    difficulty: "Medium",
+    topics: ["Feature Engineering", "Clustering"], // Using Clustering as a proxy for Unsupervised if needed, but Feature Engineering fits well
+    acceptance: 68.5,
+    status: "unsolved",
+    description: "Reduce the dimensionality of a high-dimensional dataset using Principal Component Analysis (PCA) while retaining 95% of the variance.",
+    dataset: "digits.csv — 1797 samples, 64 features",
+    metric: "Explained Variance Ratio",
+    constraints: ["Must use scikit-learn", "Time limit: 60s"],
+    starterCode: `from sklearn.decomposition import PCA
+
+def solution(X):
+    """
+    Reduce dimensionality using PCA.
+    
+    Args:
+        X: high-dimensional data
+        
+    Returns:
+        X_reduced: data with reduced dimensions
+        pca: fitted PCA object
+    """
+    # Your code here
+    pass`,
+  },
+  {
+    id: 12,
+    title: "Movie Recommendation System",
+    difficulty: "Medium",
+    topics: ["Recommender Systems"],
+    acceptance: 55.2,
+    status: "unsolved",
+    description: "Build a collaborative filtering recommendation system to suggest movies to users based on their rating history.",
+    dataset: "movies.csv & ratings.csv — 100k ratings, 9k movies, 600 users",
+    metric: "RMSE",
+    constraints: ["Time limit: 120s"],
+    starterCode: `import pandas as pd
+from sklearn.metrics import mean_squared_error
+
+def solution(ratings_train, ratings_test):
+    """
+    Predict movie ratings.
+    
+    Args:
+        ratings_train: DataFrame [userId, movieId, rating]
+        ratings_test: DataFrame [userId, movieId, rating]
+        
+    Returns:
+        predictions: list of predicted ratings for test set
+    """
+    # Your code here
+    pass`,
+  },
+  {
+    id: 13,
+    title: "Reinforcement Learning with CartPole",
+    difficulty: "Hard",
+    topics: ["Reinforcement Learning"],
+    acceptance: 25.8,
+    status: "unsolved",
+    description: "Train an agent to balance a pole on a cart using reinforcement learning (DQN or Policy Gradient). The agent must keep the pole balanced for 200 time steps.",
+    dataset: "OpenAI Gym CartPole-v1 Environment",
+    metric: "Average Reward",
+    constraints: ["PyTorch or TensorFlow", "Time limit: 600s"],
+    starterCode: `import gym
+import torch
+import torch.nn as nn
+
+def solution(env):
+    """
+    Train an RL agent on CartPole-v1.
+    
+    Args:
+        env: gym environment
+        
+    Returns:
+        policy_net: trained neural network
+    """
+    # Your code here
+    pass`,
+  },
+  {
+    id: 14,
+    title: "Gradient Boosting for Churn Prediction",
+    difficulty: "Medium",
+    topics: ["Classification"],
+    acceptance: 62.9,
+    status: "unsolved",
+    description: "Predict customer churn using Gradient Boosting (XGBoost/LightGBM/CatBoost). Optimize hyperparameters for maximum recall.",
+    dataset: "telecom_churn.csv — 7043 samples, 21 features",
+    metric: "Recall",
+    constraints: ["Time limit: 180s"],
+    starterCode: `from xgboost import XGBClassifier
+
+def solution(X_train, y_train, X_test):
+    """
+    Predict customer churn.
+    
+    Args:
+        X_train: Training features
+        y_train: Training labels
+        X_test: Test features
+        
+    Returns:
+        predictions: predicted labels
+    """
+    # Your code here
+    pass`,
+  },
+  {
+    id: 15,
+    title: "Transfer Learning with ResNet",
+    difficulty: "Easy",
+    topics: ["Computer Vision", "Deep Learning"],
+    acceptance: 85.3,
+    status: "unsolved",
+    description: "Fine-tune a pre-trained ResNet-18 model to classify bees vs. ants. Use transfer learning to achieve high accuracy with a small dataset.",
+    dataset: "hymenoptera_data — 244 training images, 153 validation images",
+    metric: "Accuracy",
+    constraints: ["PyTorch only", "Time limit: 300s", "GPU available"],
+    starterCode: `import torch
+import torch.nn as nn
+from torchvision import models
+
+def solution(train_loader, val_loader):
+    """
+    Fine-tune ResNet-18.
+    
+    Args:
+        train_loader: DataLoader for training
+        val_loader: DataLoader for validation
+        
+    Returns:
+        model: trained model
+    """
     # Your code here
     pass`,
   },

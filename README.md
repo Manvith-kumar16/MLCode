@@ -1,73 +1,118 @@
-# Welcome to your Lovable project
+# MLCode 🧠
 
-## Project info
+**Master Machine Learning Through Practice.**
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+MLCode is a specialized platform designed for practitioners to sharpen their machine learning skills by solving real-world challenges. From basic regression to advanced deep learning, MLCode provides a structured environment for hands-on learning, instant evaluation, and community-driven progress.
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## 🚀 Key Features
 
-**Use Lovable**
+- **ML Problem Sets**: 150+ curated challenges across Classification, Regression, NLP, and Computer Vision.
+- **Instant Evaluation**: Automated scoring against hidden test datasets using industry-standard metrics (Accuracy, F1, RMSE).
+- **Global Leaderboard**: Compete with practitioners worldwide and track your standing.
+- **Detailed Analytics**: Visualize your growth with submission heatmaps and skill-specific progress tracking.
+- **Rich Code Editor**: Integrated Monaco editor with syntax highlighting for Python/ML scripts.
+- **Modern Dashboard**: High-performance analytics dashboard for monitoring your learning journey.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## 🛠️ Tech Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+### Frontend
+- **Framework**: React 18 with TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS & Vanilla CSS
+- **UI Components**: shadcn/ui & Radix UI
+- **State Management**: TanStack Query (React Query)
+- **Animations**: Framer Motion
+- **Icons**: Lucide React
 
-**Use your preferred IDE**
+### Backend
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Database**: MongoDB (via Mongoose)
+- **Authentication**: JWT & Google OAuth 2.0
+- **Validation**: Zod & Express-validator
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 📂 Project Structure
 
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```text
+├── server/             # Express.js backend API
+│   ├── models/         # MongoDB schemas (User, Submission, Problem)
+│   ├── routes/         # API endpoints (Auth, Submissions)
+│   └── index.js        # Server entry point
+├── src/                # React frontend source
+│   ├── components/     # Reusable UI components
+│   ├── pages/          # Application views (Index, Dashboard, Problems)
+│   ├── lib/            # Utility functions and configurations
+│   └── App.tsx         # Frontend routing logic
+└── package.json        # Project metadata and dependencies
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## ⚙️ Getting Started
 
-**Use GitHub Codespaces**
+### Prerequisites
+- [Node.js](https://nodejs.org/) (v18+ recommended)
+- [MongoDB](https://www.mongodb.com/) (Local or Atlas instance)
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Installation
 
-## What technologies are used for this project?
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd ML_Code
+   ```
 
-This project is built with:
+2. **Install Frontend Dependencies**
+   ```bash
+   npm install
+   ```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+3. **Install Backend Dependencies**
+   ```bash
+   cd server
+   npm install
+   cd ..
+   ```
 
-## How can I deploy this project?
+### Environment Setup
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+Create a `.env` file in the `server` directory and add the following:
+```env
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+PORT=5001
+```
 
-## Can I connect a custom domain to my Lovable project?
+### Running the Application
 
-Yes, you can!
+1. **Start the Backend**
+   ```bash
+   cd server
+   npm run dev
+   ```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+2. **Start the Frontend** (in a new terminal)
+   ```bash
+   npm run dev
+   ```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Open [http://localhost:5173](http://localhost:5173) to view the application.
+
+---
+
+## 🧪 Testing
+
+Run frontend unit tests using Vitest:
+```bash
+npm run test
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
