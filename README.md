@@ -1,4 +1,4 @@
-# MLCode 🧠
+# MLCode 
 
 **Master Machine Learning Through Practice.**
 
