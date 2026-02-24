@@ -26,7 +26,7 @@ MLCode is a specialized platform designed for practitioners to sharpen their mac
 - **Animations**: Framer Motion
 - **Icons**: Lucide React
 
-### Backend
+### Backend:
 - **Runtime**: Node.js
 - **Framework**: Express.js
 - **Database**: MongoDB (via Mongoose)
