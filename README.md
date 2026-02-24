@@ -17,7 +17,7 @@ MLCode is a specialized platform designed for practitioners to sharpen their mac
 
 ## 🛠️ Tech Stack
 
-### Frontend
+### Frontend:
 - **Framework**: React 18 with TypeScript
 - **Build Tool**: Vite
 - **Styling**: Tailwind CSS & Vanilla CSS
