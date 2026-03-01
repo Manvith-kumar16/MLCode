@@ -69,12 +69,9 @@ export function AppSidebar() {
 
     return (
         <Sidebar>
-            <SidebarHeader className="p-4 border-b border-sidebar-border">
-                <Link to="/" className="flex items-center gap-2 font-bold text-xl px-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                        <Code2 className="size-5" />
-                    </div>
-                    <span>ML Code</span>
+            <SidebarHeader className="h-14 p-0 border-b border-sidebar-border">
+                <Link to="/" className="flex items-center gap-2 h-full w-full px-4 justify-start">
+                    <img src="/ML Code LOGO.png" alt="ML Code Logo" className="h-10 max-h-full object-contain" />
                 </Link>
             </SidebarHeader>
             <SidebarContent>
@@ -109,14 +106,6 @@ export function AppSidebar() {
                                 <span className="truncate text-xs text-muted-foreground">{user.email}</span>
                             </div>
                         </Link>
-                        <Button
-                            variant="destructive"
-                            className="w-full justify-start gap-2 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/20"
-                            onClick={handleLogout}
-                        >
-                            <LogOut className="h-4 w-4" />
-                            Log out
-                        </Button>
                     </div>
                 ) : (
                     <div className="flex flex-col gap-2">

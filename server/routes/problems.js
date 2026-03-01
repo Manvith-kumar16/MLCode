@@ -1,11 +1,50 @@
 const express = require('express');
 const router = express.Router();
 const Problem = require('../models/Problem');
+const Submission = require('../models/Submission');
+const jwt = require('jsonwebtoken');
+
+// Optional auth middleware
+const optionalAuth = (req, res, next) => {
+    const token = req.header('auth-token');
+    if (token) {
+        try {
+            req.user = jwt.verify(token, 'SECRET_KEY_SHOULD_BE_IN_ENV');
+        } catch (err) { }
+    }
+    next();
+};
 
 // GET all problems
-router.get('/', async (req, res) => {
+router.get('/', optionalAuth, async (req, res) => {
     try {
-        const problems = await Problem.find().sort({ createdAt: -1 });
+        let problems = await Problem.find().sort({ createdAt: -1 });
+
+        // Make it mutable
+        problems = problems.map(p => p.toObject());
+
+        if (req.user) {
+            // Fetch user's submissions
+            const userSubmissions = await Submission.find({ userId: req.user._id });
+            const statusMap = {};
+
+            userSubmissions.forEach(sub => {
+                const pid = sub.problemId;
+                if (statusMap[pid] === "solved") return; // Already best status
+                if (sub.status === "Accepted") {
+                    statusMap[pid] = "solved";
+                } else {
+                    statusMap[pid] = "attempted";
+                }
+            });
+
+            problems.forEach(p => {
+                if (statusMap[p.problemId]) {
+                    p.status = statusMap[p.problemId];
+                }
+            });
+        }
+
         res.status(200).json(problems);
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch problems', details: err.message });
@@ -13,10 +52,24 @@ router.get('/', async (req, res) => {
 });
 
 // GET a specific problem by problemId
-router.get('/:id', async (req, res) => {
+router.get('/:id', optionalAuth, async (req, res) => {
     try {
-        const problem = await Problem.findOne({ problemId: req.params.id });
+        let problem = await Problem.findOne({ problemId: req.params.id });
         if (!problem) return res.status(404).json({ error: 'Problem not found' });
+
+        problem = problem.toObject();
+
+        if (req.user) {
+            const userSubmissions = await Submission.find({ userId: req.user._id, problemId: problem.problemId });
+            let status = null;
+            userSubmissions.forEach(sub => {
+                if (status === "solved") return;
+                if (sub.status === "Accepted") status = "solved";
+                else status = "attempted";
+            });
+            if (status) problem.status = status;
+        }
+
         res.status(200).json(problem);
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch problem', details: err.message });

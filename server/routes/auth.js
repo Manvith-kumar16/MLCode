@@ -63,6 +63,40 @@ router.post('/signin', async (req, res) => {
 router.get('/me', verify, async (req, res) => {
     try {
         const user = await User.findById(req.user._id).select('-password');
+
+        // --- STREAK CALCULATION LOGIC ---
+        const now = new Date();
+        const lastActive = user.streak.lastActive;
+        let streakUpdated = false;
+
+        if (!lastActive) {
+            user.streak.current = 1;
+            user.streak.lastActive = now;
+            streakUpdated = true;
+        } else {
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const last = new Date(lastActive.getFullYear(), lastActive.getMonth(), lastActive.getDate());
+            const diffTime = Math.abs(today - last);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 1) {
+                user.streak.current += 1;
+                user.streak.lastActive = now;
+                streakUpdated = true;
+            } else if (diffDays > 1) {
+                user.streak.current = 1;
+                user.streak.lastActive = now;
+                streakUpdated = true;
+            } else {
+                user.streak.lastActive = now;
+                streakUpdated = true;
+            }
+        }
+
+        if (streakUpdated) {
+            await user.save();
+        }
+
         res.json(user);
     } catch (err) {
         res.status(500).json({ message: "Server Error" });

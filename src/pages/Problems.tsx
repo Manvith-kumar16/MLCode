@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { Search, Filter, CheckCircle2, Clock, Minus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
@@ -26,14 +26,29 @@ const StatusIcon = ({ status }: { status: ProblemStatus }) => {
 };
 
 const Problems = () => {
-  const [search, setSearch] = useState("");
+  const [searchParams] = useSearchParams();
+  const initialQ = searchParams.get("q") || "";
+
+  const [search, setSearch] = useState(initialQ);
   const [diffFilter, setDiffFilter] = useState<Difficulty | "All">("All");
   const [topicFilter, setTopicFilter] = useState<string>("All");
+
+  useEffect(() => {
+    const q = searchParams.get("q");
+    if (q !== null) {
+      setSearch(q);
+    }
+  }, [searchParams]);
 
   const { data: problems = [], isLoading } = useQuery({
     queryKey: ["problems"],
     queryFn: async () => {
-      const res = await fetch("http://localhost:5001/api/problems");
+      const token = localStorage.getItem("token");
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers["auth-token"] = token;
+      }
+      const res = await fetch("http://localhost:5001/api/problems", { headers });
       if (!res.ok) throw new Error("Failed to fetch problems");
       return res.json();
     }

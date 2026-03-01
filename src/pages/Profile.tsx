@@ -49,6 +49,7 @@ const Profile = () => {
   const [user, setUser] = useState<UserData | null>(null);
   const [submissionStats, setSubmissionStats] = useState<{ date: string; count: number }[]>([]);
   const [recentSubmissions, setRecentSubmissions] = useState([]);
+  const [totalProblems, setTotalProblems] = useState({ easy: 0, medium: 0, hard: 0, total: 0 });
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -90,6 +91,22 @@ const Profile = () => {
             if (subsRes.ok) {
               const subsData = await subsRes.json();
               setRecentSubmissions(subsData);
+            }
+
+            // Fetch overall platform problem counts
+            const probRes = await fetch("http://localhost:5001/api/problems", {
+              headers: { "auth-token": token }
+            });
+            if (probRes.ok) {
+              const probData = await probRes.json();
+              const counts = { easy: 0, medium: 0, hard: 0, total: probData.length };
+              probData.forEach((p: any) => {
+                const diff = (p.difficulty || "easy").toLowerCase();
+                if (counts[diff as keyof typeof counts] !== undefined) {
+                  counts[diff as keyof typeof counts]++;
+                }
+              });
+              setTotalProblems(counts);
             }
           }
         }
@@ -210,28 +227,28 @@ const Profile = () => {
                 <div className="space-y-1">
                   <div className="flex justify-between text-sm">
                     <span className="text-green-500">Easy</span>
-                    <span className="text-muted-foreground">{user.problemsSolved.easy} / 789</span>
+                    <span className="text-muted-foreground">{user.problemsSolved.easy} / {totalProblems.easy || 1}</span>
                   </div>
                   <div className="h-2 w-full rounded-full bg-muted/20">
-                    <div className="h-full rounded-full bg-green-500" style={{ width: `${(user.problemsSolved.easy / 789) * 100}%` }}></div>
+                    <div className="h-full rounded-full bg-green-500 transition-all duration-1000" style={{ width: `${Math.min(100, (user.problemsSolved.easy / Math.max(1, totalProblems.easy)) * 100)}%` }}></div>
                   </div>
                 </div>
                 <div className="space-y-1">
                   <div className="flex justify-between text-sm">
                     <span className="text-yellow-500">Medium</span>
-                    <span className="text-muted-foreground">{user.problemsSolved.medium} / 1632</span>
+                    <span className="text-muted-foreground">{user.problemsSolved.medium} / {totalProblems.medium || 1}</span>
                   </div>
                   <div className="h-2 w-full rounded-full bg-muted/20">
-                    <div className="h-full rounded-full bg-yellow-500" style={{ width: `${(user.problemsSolved.medium / 1632) * 100}%` }}></div>
+                    <div className="h-full rounded-full bg-yellow-500 transition-all duration-1000" style={{ width: `${Math.min(100, (user.problemsSolved.medium / Math.max(1, totalProblems.medium)) * 100)}%` }}></div>
                   </div>
                 </div>
                 <div className="space-y-1">
                   <div className="flex justify-between text-sm">
                     <span className="text-red-500">Hard</span>
-                    <span className="text-muted-foreground">{user.problemsSolved.hard} / 704</span>
+                    <span className="text-muted-foreground">{user.problemsSolved.hard} / {totalProblems.hard || 1}</span>
                   </div>
                   <div className="h-2 w-full rounded-full bg-muted/20">
-                    <div className="h-full rounded-full bg-red-500" style={{ width: `${(user.problemsSolved.hard / 704) * 100}%` }}></div>
+                    <div className="h-full rounded-full bg-red-500 transition-all duration-1000" style={{ width: `${Math.min(100, (user.problemsSolved.hard / Math.max(1, totalProblems.hard)) * 100)}%` }}></div>
                   </div>
                 </div>
               </div>

@@ -23,7 +23,7 @@ router.get('/stats/:userId', verify, async (req, res) => {
     try {
         // Aggregate submissions by date for heatmap
         const stats = await Submission.aggregate([
-            { $match: { userId: mongoose.Types.ObjectId(req.params.userId) } },
+            { $match: { userId: new mongoose.Types.ObjectId(req.params.userId) } },
             {
                 $group: {
                     _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
@@ -85,6 +85,34 @@ router.post('/submit', async (req, res) => {
 
         const savedSubmission = await newSubmission.save();
 
+        // Increment user's solved count if this is their FIRST time solving
+        if (status === "Accepted") {
+            // Check if they already solved it previously
+            const pastSolves = await Submission.countDocuments({
+                userId: resolvedUserId,
+                problemId: problemId.toString(),
+                status: "Accepted",
+                _id: { $ne: savedSubmission._id } // exclude the one we just saved
+            });
+
+            if (pastSolves === 0) {
+                // First time solving! Let's increment User model
+                const userObj = await User.findById(resolvedUserId);
+                if (userObj) {
+                    const diff = (problem.difficulty || "easy").toLowerCase();
+                    if (userObj.problemsSolved && typeof userObj.problemsSolved[diff] === 'number') {
+                        userObj.problemsSolved[diff] += 1;
+                    } else {
+                        // Fallback initialize if missing
+                        if (!userObj.problemsSolved) userObj.problemsSolved = { easy: 0, medium: 0, hard: 0 };
+                        userObj.problemsSolved[diff] = 1;
+                    }
+                    userObj.points += diff === 'hard' ? 30 : (diff === 'medium' ? 20 : 10);
+                    await userObj.save();
+                }
+            }
+        }
+
         // Return both the submission record and the detailed python execution logs
         res.json({
             submission: savedSubmission,
@@ -98,10 +126,9 @@ router.post('/submit', async (req, res) => {
 });
 
 // Get recent submission for a specific problem
-router.get('/problem/:problemId', async (req, res) => {
+router.get('/problem/:problemId', verify, async (req, res) => {
     try {
-        // In a real app we'd filter by req.user.id too
-        const sub = await Submission.findOne({ problemId: req.params.problemId })
+        const sub = await Submission.findOne({ problemId: req.params.problemId, userId: req.user._id })
             .sort({ createdAt: -1 })
             .populate('userId', 'username');
 

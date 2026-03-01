@@ -48,6 +48,7 @@ const ProblemDetail = () => {
   const [activeTestCaseIndex, setActiveTestCaseIndex] = useState(0);
   const [activeResultTabIndex, setActiveResultTabIndex] = useState(0);
   const [submissionResult, setSubmissionResult] = useState<any>(null);
+  const [revealedHints, setRevealedHints] = useState<number[]>([]);
 
   const [outputHeight, setOutputHeight] = useState(256);
   const isDraggingRef = useRef(false);
@@ -137,9 +138,40 @@ const ProblemDetail = () => {
 
   useEffect(() => {
     if (problem) {
-      setCode(problem.starterCode || "# Write your solution here\n");
+      const LOCAL_KEY = `code_${problem.problemId}`;
+      const cached = localStorage.getItem(LOCAL_KEY);
+
+      if (cached !== null) {
+        setCode(cached);
+        return;
+      }
+
+      const token = localStorage.getItem("token");
+      if (token) {
+        fetch(`http://localhost:5001/api/submissions/problem/${problem.problemId}`, {
+          headers: { "auth-token": token }
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data && data.code) {
+              setCode(data.code);
+            } else {
+              setCode(problem.starterCode || "# Write your solution here\n");
+            }
+          })
+          .catch(() => setCode(problem.starterCode || "# Write your solution here\n"));
+      } else {
+        setCode(problem.starterCode || "# Write your solution here\n");
+      }
     }
   }, [problem]);
+
+  useEffect(() => {
+    if (problem && code) {
+      const LOCAL_KEY = `code_${problem.problemId}`;
+      localStorage.setItem(LOCAL_KEY, code);
+    }
+  }, [code, problem]);
 
   if (isLoading) {
     return (
@@ -533,11 +565,31 @@ const ProblemDetail = () => {
             )}
             {activeTab === "hints" && (
               <div className="space-y-3">
-                <div className="glass-card p-4 cursor-pointer hover:bg-accent/50 transition-colors">
-                  <p className="text-sm text-muted-foreground">💡 Click to reveal Hint 1</p>
+                <div
+                  className="glass-card p-4 cursor-pointer hover:bg-accent/50 transition-colors"
+                  onClick={() => setRevealedHints(prev => prev.includes(0) ? prev.filter(i => i !== 0) : [...prev, 0])}
+                >
+                  <p className="text-sm font-medium flex justify-between text-muted-foreground hover:text-foreground transition-colors">
+                    <span>💡 {revealedHints.includes(0) ? "Hint 1" : "Click to reveal Hint 1"}</span>
+                  </p>
+                  {revealedHints.includes(0) && (
+                    <div className="mt-3 text-sm text-foreground/80 border-t border-border/10 pt-3 leading-relaxed">
+                      {problem?.hints?.[0] || "Carefully read the problem constraints and edge cases before writing your algorithm. Consider the input scale to choose the right time complexity."}
+                    </div>
+                  )}
                 </div>
-                <div className="glass-card p-4 cursor-pointer hover:bg-accent/50 transition-colors">
-                  <p className="text-sm text-muted-foreground">💡 Click to reveal Hint 2</p>
+                <div
+                  className="glass-card p-4 cursor-pointer hover:bg-accent/50 transition-colors"
+                  onClick={() => setRevealedHints(prev => prev.includes(1) ? prev.filter(i => i !== 1) : [...prev, 1])}
+                >
+                  <p className="text-sm font-medium flex justify-between text-muted-foreground hover:text-foreground transition-colors">
+                    <span>💡 {revealedHints.includes(1) ? "Hint 2" : "Click to reveal Hint 2"}</span>
+                  </p>
+                  {revealedHints.includes(1) && (
+                    <div className="mt-3 text-sm text-foreground/80 border-t border-border/10 pt-3 leading-relaxed">
+                      {problem?.hints?.[1] || "Try to optimize your approach's time and space complexity if you encounter performance issues. Break down the problem into smaller subproblems."}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

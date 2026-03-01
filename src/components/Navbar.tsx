@@ -3,6 +3,7 @@ import { Brain, Trophy, User, LayoutDashboard, Code2, Menu, X, Search, Bell, Fla
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 const navItems = [
   { path: "/problems", label: "Problems", icon: Code2 },
@@ -18,6 +19,7 @@ const Navbar = () => {
   const [streak, setStreak] = useState(0);
   const [avatar, setAvatar] = useState("");
   const [name, setName] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchUserData = async () => {
     const token = localStorage.getItem("token");
@@ -58,10 +60,7 @@ const Navbar = () => {
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
         <div className="flex items-center gap-2 md:hidden">
           <Link to="/" className="flex items-center gap-2">
-            <Brain className="h-6 w-6 text-primary" />
-            <span className="font-bold text-xl tracking-tight">
-              ML <span className="text-primary">Code</span>
-            </span>
+            <img src="/ML Code LOGO.png" alt="ML Code Logo" className="h-12 w-auto" />
           </Link>
         </div>
 
@@ -77,12 +76,24 @@ const Navbar = () => {
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && searchQuery.trim()) {
+                      navigate(`/problems?q=${encodeURIComponent(searchQuery)}`);
+                    }
+                  }}
                   className="pl-9 w-[200px] bg-muted/50 border-none focus-visible:ring-1"
                 />
               </div>
 
               {/* Notifications */}
-              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-foreground relative"
+                onClick={() => toast("You caught up on everything!", { description: "No new notifications right now." })}
+              >
                 <Bell className="h-5 w-5" />
               </Button>
 
