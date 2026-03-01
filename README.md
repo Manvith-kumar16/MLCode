@@ -1,118 +1,287 @@
-# MLCode 
+<div align="center">
 
-**Master Machine Learning Through Practice.**
+<img src="public/ML Code LOGO.png" alt="ML Code Logo" width="80" />
 
-MLCode is a specialized platform designed for practitioners to sharpen their machine learning skills by solving real-world challenges. From basic regression to advanced deep learning, MLCode provides a structured environment for hands-on learning, instant evaluation, and community-driven progress.
+# ML Code
 
----
+### The LeetCode for Machine Learning Engineers
 
-## 🚀 Key Features
+**Practice real-world ML challenges, compete on the leaderboard, and level up your data science skills.**
 
-- **ML Problem Sets**: 150+ curated challenges across Classification, Regression, NLP, and Computer Vision.
-- **Instant Evaluation**: Automated scoring against hidden test datasets using industry-standard metrics (Accuracy, F1, RMSE).
-- **Global Leaderboard**: Compete with practitioners worldwide and track your standing.
-- **Detailed Analytics**: Visualize your growth with submission heatmaps and skill-specific progress tracking.
-- **Rich Code Editor**: Integrated Monaco editor with syntax highlighting for Python/ML scripts.
-- **Modern Dashboard**: High-performance analytics dashboard for monitoring your learning journey.
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-mlcode.vercel.app-orange?style=for-the-badge&logo=vercel)](https://mlcode.vercel.app)
+[![Backend](https://img.shields.io/badge/Backend-Render-46E3B7?style=for-the-badge&logo=render)](https://mlcode-snkb.onrender.com)
+[![GitHub](https://img.shields.io/badge/GitHub-Manvith--kumar16%2FMLCode-181717?style=for-the-badge&logo=github)](https://github.com/Manvith-kumar16/MLCode)
 
-## 🛠️ Tech Stack
+![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript)
+![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite)
+![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=flat-square&logo=node.js)
+![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47A248?style=flat-square&logo=mongodb)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3-06B6D4?style=flat-square&logo=tailwindcss)
 
-### Frontend:
-- **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS & Vanilla CSS
-- **UI Components**: shadcn/ui & Radix UI
-- **State Management**: TanStack Query (React Query)
-- **Animations**: Framer Motion
-- **Icons**: Lucide React
-
-### Backend:
-- **Runtime**: Node.js
-- **Framework**: Express.js
-- **Database**: MongoDB (via Mongoose)
-- **Authentication**: JWT & Google OAuth 2.0
-- **Validation**: Zod & Express-validator
+</div>
 
 ---
 
-## 📂 Project Structure
+## 🧠 What is ML Code?
 
-```text
-├── server/             # Express.js backend API
-│   ├── models/         # MongoDB schemas (User, Submission, Problem)
-│   ├── routes/         # API endpoints (Auth, Submissions)
-│   └── index.js        # Server entry point
-├── src/                # React frontend source
-│   ├── components/     # Reusable UI components
-│   ├── pages/          # Application views (Index, Dashboard, Problems)
-│   ├── lib/            # Utility functions and configurations
-│   └── App.tsx         # Frontend routing logic
-└── package.json        # Project metadata and dependencies
+**ML Code** is an interactive coding platform specifically designed for **Machine Learning and Data Science** practitioners. Inspired by LeetCode, it offers a curated set of ML problems spanning topics like Classification, Regression, Deep Learning, NLP, Computer Vision, and more — with a built-in Python code editor, real-time code execution, and a competitive leaderboard.
+
+---
+
+## ✨ Features
+
+| Feature | Description |
+|---|---|
+| 🧩 **ML Problem Set** | Curated problems across 10+ ML topics with difficulty tiers |
+| ⚡ **In-Browser Code Editor** | Monaco Editor (VS Code engine) with Python 3 support and light/dark toggle |
+| 🚀 **Code Execution** | Run and submit code against hidden test cases in real time |
+| 📊 **Dashboard** | Personal stats, activity heatmap, and recent submissions at a glance |
+| 🏆 **Leaderboard** | Live global rankings with a visual podium for the top 3 |
+| 👤 **Profile Page** | Detailed profile with rank, streak, solved stats, badges, and heatmap |
+| 📝 **Submissions Page** | Full history of all submissions with status filtering & code preview |
+| 💬 **Discussion** | Per-problem discussion threads (post, view, delete your comments) |
+| 💡 **Hints** | Two-level hints per problem, revealed on demand |
+| 🔐 **Authentication** | Email/password and **Google OAuth** sign-in |
+| 🌙 **Premium Dark UI** | Glassmorphism design, ambient glow backgrounds, smooth animations |
+| 📱 **Responsive** | Works across desktop and tablet screens |
+
+---
+
+## 🖥️ Screenshots
+
+> **Problems Page** — Searchable, filterable problem list with stat cards
+
+> **Problem Detail** — Monaco editor with run/submit, test results, discussion, and hints
+
+> **Leaderboard** — Visual podium + ranked table with gold/silver/bronze highlights
+
+> **Profile** — Submission heatmap, difficulty breakdown, recent submissions
+
+---
+
+## 🏗️ Tech Stack
+
+### Frontend
+| Technology | Purpose |
+|---|---|
+| React 18 + TypeScript | UI framework |
+| Vite 5 | Build tool & dev server |
+| Tailwind CSS 3 | Utility-first styling |
+| Framer Motion | Animations |
+| Monaco Editor (`@monaco-editor/react`) | In-browser code editor |
+| React Router v6 | Client-side routing |
+| TanStack Query | Server state management |
+| Lucide React | Icon library |
+| Radix UI + shadcn/ui | Headless UI components |
+| Sonner | Toast notifications |
+| date-fns | Date formatting |
+| React Markdown + remark-gfm | Problem description rendering |
+
+### Backend
+| Technology | Purpose |
+|---|---|
+| Node.js + Express | REST API server |
+| MongoDB + Mongoose | Database & ODM |
+| JSON Web Tokens (JWT) | Authentication |
+| bcryptjs | Password hashing |
+| google-auth-library | Google OAuth verification |
+| dotenv | Environment config |
+
+---
+
+## 📁 Project Structure
+
+```
+MLCode/
+├── src/                        # Frontend source
+│   ├── pages/
+│   │   ├── Index.tsx           # Landing page
+│   │   ├── Problems.tsx        # Problem list with filters
+│   │   ├── ProblemDetail.tsx   # Code editor + problem view
+│   │   ├── Dashboard.tsx       # User dashboard
+│   │   ├── Leaderboard.tsx     # Global rankings
+│   │   ├── Profile.tsx         # User profile
+│   │   ├── Submissions.tsx     # Submission history
+│   │   ├── SignIn.tsx          # Login page
+│   │   ├── SignUp.tsx          # Registration page
+│   │   └── EditProfile.tsx     # Profile settings
+│   ├── components/
+│   │   ├── ui/                 # shadcn/ui components
+│   │   ├── AppSidebar.tsx      # Navigation sidebar
+│   │   ├── DifficultyBadge.tsx # Easy/Medium/Hard badge
+│   │   ├── RecentSubmissions.tsx
+│   │   └── SubmissionHeatmap.tsx
+│   └── App.tsx                 # Routes configuration
+│
+├── server/                     # Backend source
+│   ├── models/
+│   │   ├── User.js             # User schema
+│   │   ├── Problem.js          # Problem schema
+│   │   ├── Submission.js       # Submission schema
+│   │   └── Discussion.js       # Discussion/comment schema
+│   ├── routes/
+│   │   ├── auth.js             # Auth + user routes
+│   │   ├── problems.js         # Problem CRUD routes
+│   │   ├── submissions.js      # Submission routes
+│   │   ├── discussions.js      # Discussion routes
+│   │   ├── execute.js          # Code execution route
+│   │   └── verifyToken.js      # JWT middleware
+│   ├── services/               # Execution service
+│   └── index.js                # Express app entry
+│
+├── vercel.json                 # Vercel SPA routing config
+├── .env                        # Frontend env vars
+└── vite.config.ts
 ```
 
 ---
 
-## ⚙️ Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) (v18+ recommended)
-- [MongoDB](https://www.mongodb.com/) (Local or Atlas instance)
 
-### Installation
+- Node.js v18+
+- MongoDB (local or [MongoDB Atlas](https://www.mongodb.com/atlas))
+- A Google Cloud project with OAuth 2.0 credentials
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd ML_Code
-   ```
+### 1. Clone the repository
 
-2. **Install Frontend Dependencies**
-   ```bash
-   npm install
-   ```
+```bash
+git clone https://github.com/Manvith-kumar16/MLCode.git
+cd MLCode
+```
 
-3. **Install Backend Dependencies**
-   ```bash
-   cd server
-   npm install
-   cd ..
-   ```
+### 2. Set up the Backend
 
-### Environment Setup
+```bash
+cd server
+npm install
+```
 
-Create a `.env` file in the `server` directory and add the following:
+Create `server/.env`:
 ```env
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
+MONGO_URI=mongodb+srv://<user>:<password>@cluster.mongodb.net/mlcode
+GOOGLE_CLIENT_ID=your_google_oauth_client_id
 PORT=5001
 ```
 
-### Running the Application
+Start the server:
+```bash
+npm run dev
+```
 
-1. **Start the Backend**
-   ```bash
-   cd server
-   npm run dev
-   ```
+### 3. Set up the Frontend
 
-2. **Start the Frontend** (in a new terminal)
-   ```bash
-   npm run dev
-   ```
+```bash
+# From the project root
+npm install
+```
 
-Open [http://localhost:5173](http://localhost:5173) to view the application.
+Create `.env` in the root:
+```env
+VITE_API_URL=http://localhost:5001
+```
+
+Start the dev server:
+```bash
+npm run dev
+```
+
+The app will be available at `http://localhost:5173`
 
 ---
 
-## 🧪 Testing
+## 🌐 API Reference
 
-Run frontend unit tests using Vitest:
-```bash
-npm run test
+### Auth Routes — `/api/auth`
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/signup` | Register with email & password |
+| `POST` | `/signin` | Login with email & password |
+| `POST` | `/google` | Login / register via Google OAuth |
+| `GET` | `/me` | Get current user profile (auth required) |
+| `PUT` | `/me` | Update profile (auth required) |
+| `GET` | `/leaderboard` | Get top 10 users by points |
+| `GET` | `/rank/:userId` | Get a user's global rank |
+
+### Problems Routes — `/api/problems`
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/` | List all problems |
+| `GET` | `/:id` | Get single problem by problemId |
+
+### Submissions Routes — `/api/submissions`
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/submit` | Submit solution for judging |
+| `GET` | `/user/:userId` | Get all submissions for a user |
+| `GET` | `/stats/:userId` | Get heatmap data for a user |
+| `GET` | `/problem/:problemId` | Get submissions for a problem |
+
+### Execution Routes — `/api/execute`
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/:problemId` | Run code without submitting |
+
+### Discussion Routes — `/api/discussions`
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/:problemId` | Get all comments for a problem |
+| `POST` | `/` | Post a new comment (auth required) |
+| `DELETE` | `/:commentId` | Delete your comment (auth required) |
+
+---
+
+## 🚢 Deployment
+
+### Backend → Render
+
+1. Connect your GitHub repo to [render.com](https://render.com)
+2. Set **Root Directory** to `server`
+3. Build command: `npm install` | Start command: `npm start`
+4. Add environment variables: `MONGO_URI`, `GOOGLE_CLIENT_ID`, `PORT`
+
+### Frontend → Vercel
+
+1. Import repo at [vercel.com](https://vercel.com) → root directory `.`
+2. Framework: **Vite** | Build: `npm run build` | Output: `dist`
+3. Add env variable: `VITE_API_URL=https://your-render-backend.onrender.com`
+4. Add your Vercel domain to **Google Cloud Console → Authorized Origins**
+
+---
+
+## 🔐 Environment Variables
+
+### Frontend (`.env`)
+```env
+VITE_API_URL=https://mlcode-snkb.onrender.com
+```
+
+### Backend (`server/.env`)
+```env
+MONGO_URI=mongodb+srv://...
+GOOGLE_CLIENT_ID=...apps.googleusercontent.com
+PORT=5001
 ```
 
 ---
 
-## 📄 License
+## 📜 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is open source and available under the [MIT License](LICENSE).
+
+---
+
+<div align="center">
+
+**Built with ❤️ by [Manvith Kumar](https://github.com/Manvith-kumar16)**
+
+⭐ Star this repo if you found it useful!
+
+</div>
