@@ -48,18 +48,6 @@
 
 ---
 
-## 🖥️ Screenshots
-
-> **Problems Page** — Searchable, filterable problem list with stat cards
-
-> **Problem Detail** — Monaco editor with run/submit, test results, discussion, and hints
-
-> **Leaderboard** — Visual podium + ranked table with gold/silver/bronze highlights
-
-> **Profile** — Submission heatmap, difficulty breakdown, recent submissions
-
----
-
 ## 🏗️ Tech Stack
 
 ### Frontend
@@ -277,11 +265,3 @@ PORT=5001
 This project is open source and available under the [MIT License](LICENSE).
 
 ---
-
-<div align="center">
-
-**Built with ❤️ by [Manvith Kumar](https://github.com/Manvith-kumar16)**
-
-⭐ Star this repo if you found it useful!
-
-</div>
