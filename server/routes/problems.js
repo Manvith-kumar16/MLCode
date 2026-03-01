@@ -45,6 +45,28 @@ router.get('/', optionalAuth, async (req, res) => {
             });
         }
 
+        // Calculate global acceptance rates
+        const stats = await Submission.aggregate([
+            {
+                $group: {
+                    _id: "$problemId",
+                    total: { $sum: 1 },
+                    accepted: {
+                        $sum: { $cond: [{ $eq: ["$status", "Accepted"] }, 1, 0] }
+                    }
+                }
+            }
+        ]);
+
+        const accMap = {};
+        stats.forEach(s => {
+            accMap[s._id] = ((s.accepted / s.total) * 100).toFixed(1) + "%";
+        });
+
+        problems.forEach(p => {
+            p.acceptance = accMap[p.problemId] || "0.0%";
+        });
+
         res.status(200).json(problems);
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch problems', details: err.message });

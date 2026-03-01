@@ -15,7 +15,7 @@ interface ProblemData {
   title: string;
   difficulty: Difficulty;
   category: string;
-  acceptance?: number;
+  acceptance?: string;
   status?: ProblemStatus;
 }
 
