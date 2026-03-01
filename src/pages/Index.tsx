@@ -57,11 +57,6 @@ const Index = () => {
               transition={{ duration: 0.8 }}
               className="flex-1 flex flex-col justify-center items-center lg:items-start text-center lg:text-left z-10"
             >
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary shadow-lg shadow-primary/10">
-                <Zap className="h-4 w-4" />
-                The #1 Platform for ML Practice
-              </div>
-
               <h1 className="mb-6 text-5xl font-black leading-tight tracking-tight sm:text-6xl lg:text-7xl bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-white/60">
                 Master <span className="text-primary">Machine Learning</span> <br /> Through Practice
               </h1>

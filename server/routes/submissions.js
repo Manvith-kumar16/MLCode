@@ -125,14 +125,14 @@ router.post('/submit', async (req, res) => {
     }
 });
 
-// Get recent submission for a specific problem
+// Get all submissions for a specific problem by user
 router.get('/problem/:problemId', verify, async (req, res) => {
     try {
-        const sub = await Submission.findOne({ problemId: req.params.problemId, userId: req.user._id })
+        const subs = await Submission.find({ problemId: req.params.problemId, userId: req.user._id })
             .sort({ createdAt: -1 })
             .populate('userId', 'username');
 
-        res.json(sub);
+        res.json(subs);
     } catch (err) {
         res.status(500).json({ message: "Server Error" });
     }

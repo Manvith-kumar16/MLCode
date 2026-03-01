@@ -6,6 +6,7 @@ const authRoutes = require('./routes/auth');
 const submissionRoutes = require('./routes/submissions');
 const problemRoutes = require('./routes/problems');
 const executeRoutes = require('./routes/execute');
+const discussionRoutes = require('./routes/discussions');
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/submissions', submissionRoutes);
 app.use('/api/problems', problemRoutes);
 app.use('/api/execute', executeRoutes);
+app.use('/api/discussions', discussionRoutes);
 
 app.get('/', (req, res) => {
     res.send('ML Code API is running');

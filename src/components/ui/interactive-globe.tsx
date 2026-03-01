@@ -15,30 +15,43 @@ interface GlobeProps {
 }
 
 const DEFAULT_MARKERS = [
-    { lat: 37.78, lng: -122.42, label: "San Francisco" },
-    { lat: 51.51, lng: -0.13, label: "London" },
-    { lat: 35.68, lng: 139.69, label: "Tokyo" },
-    { lat: -33.87, lng: 151.21, label: "Sydney" },
-    { lat: 1.35, lng: 103.82, label: "Singapore" },
-    { lat: 55.76, lng: 37.62, label: "Moscow" },
-    { lat: -23.55, lng: -46.63, label: "São Paulo" },
-    { lat: 19.43, lng: -99.13, label: "Mexico City" },
-    { lat: 28.61, lng: 77.21, label: "Delhi" },
-    { lat: 36.19, lng: 44.01, label: "Erbil" },
+    { lat: 45.0, lng: -100.0, label: "Deep Learning" },          // North America region
+    { lat: -15.0, lng: -60.0, label: "Neural Networks" },        // South America region
+    { lat: 50.0, lng: 10.0, label: "Computer Vision" },          // Europe region
+    { lat: 0.0, lng: 20.0, label: "NLP" },                       // Africa region
+    { lat: 30.0, lng: 100.0, label: "Reinforcement Learning" },  // Asia region (East)
+    { lat: -25.0, lng: 135.0, label: "Generative AI" },        // Australia region
+    { lat: 60.0, lng: 100.0, label: "Transformer Models" },      // Northern Asia / Russia
+    { lat: 15.0, lng: 75.0, label: "Data Pipeline" },            // South Asia / India
+    { lat: 60.0, lng: -110.0, label: "AI Inference" },           // Northern Canada
+    { lat: -40.0, lng: -70.0, label: "Robotics" },               // Southern tip of South America
+    { lat: -30.0, lng: 20.0, label: "Predictive Modeling" },     // Southern Africa
+    { lat: 10.0, lng: -10.0, label: "LLMs" },                    // Mid Atlantic
+    { lat: 40.0, lng: -40.0, label: "Graph Networks" },          // North Atlantic
+    { lat: -10.0, lng: 90.0, label: "Edge AI" },                 // Indian Ocean
+    { lat: 20.0, lng: 140.0, label: "Feature Engineering" },     // Pacific (West)
+    { lat: -20.0, lng: -140.0, label: "MLOps" },                 // Pacific (East)
 ];
 
-const DEFAULT_CONNECTIONS: { from: [number, number]; to: [number, number] }[] =
-    [
-        { from: [37.78, -122.42], to: [51.51, -0.13] },
-        { from: [51.51, -0.13], to: [35.68, 139.69] },
-        { from: [35.68, 139.69], to: [-33.87, 151.21] },
-        { from: [37.78, -122.42], to: [1.35, 103.82] },
-        { from: [51.51, -0.13], to: [28.61, 77.21] },
-        { from: [37.78, -122.42], to: [-23.55, -46.63] },
-        { from: [1.35, 103.82], to: [-33.87, 151.21] },
-        { from: [28.61, 77.21], to: [36.19, 44.01] },
-        { from: [51.51, -0.13], to: [36.19, 44.01] },
-    ];
+const DEFAULT_CONNECTIONS: { from: [number, number]; to: [number, number] }[] = [
+    { from: [45.0, -100.0], to: [50.0, 10.0] },           // NA to EU
+    { from: [50.0, 10.0], to: [30.0, 100.0] },            // EU to Asia
+    { from: [30.0, 100.0], to: [-25.0, 135.0] },          // Asia to Aus
+    { from: [-25.0, 135.0], to: [-15.0, -60.0] },         // Aus to SA
+    { from: [-15.0, -60.0], to: [45.0, -100.0] },         // SA to NA
+    { from: [45.0, -100.0], to: [0.0, 20.0] },            // NA to Africa
+    { from: [0.0, 20.0], to: [15.0, 75.0] },              // Africa to South Asia
+    { from: [15.0, 75.0], to: [60.0, 100.0] },            // South Asia to North Asia
+    { from: [60.0, 100.0], to: [60.0, -110.0] },          // North Asia to North Canada
+    { from: [60.0, -110.0], to: [10.0, -10.0] },          // North Canada to Mid Atlantic
+    { from: [10.0, -10.0], to: [-30.0, 20.0] },           // Mid Atlantic to Southern Africa
+    { from: [-30.0, 20.0], to: [-40.0, -70.0] },          // Southern Africa to Southern SA
+    { from: [-40.0, -70.0], to: [-20.0, -140.0] },        // Southern SA to Pacific East
+    { from: [-20.0, -140.0], to: [20.0, 140.0] },         // Pacific East to Pacific West
+    { from: [20.0, 140.0], to: [-10.0, 90.0] },           // Pacific West to Indian Ocean
+    { from: [-10.0, 90.0], to: [40.0, -40.0] },           // Indian Ocean to North Atlantic
+    { from: [40.0, -40.0], to: [45.0, -100.0] },          // North Atlantic to NA
+];
 
 function latLngToXYZ(
     lat: number,

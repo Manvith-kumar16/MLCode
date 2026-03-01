@@ -58,9 +58,9 @@ const Navbar = () => {
   return (
     <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center gap-2">
           <Link to="/" className="flex items-center gap-2">
-            <img src="/ML Code LOGO.png" alt="ML Code Logo" className="h-12 w-auto" />
+            <img src="/ML Code LOGO.png" alt="ML Code Logo" className="h-8 w-auto rounded border-border" />
           </Link>
         </div>
 
