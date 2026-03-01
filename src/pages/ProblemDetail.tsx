@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, Play, Send, FileText, MessageSquare, Lightbulb, History, CheckCircle2, XCircle, Code2, LayoutGrid, ChevronLeft, ChevronRight, Shuffle, Layout, Settings, Flame, Timer, UserPlus, Bug, CloudUpload, Copy, Sparkles, Bell, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import DifficultyBadge from "@/components/DifficultyBadge";
 import Editor from "@monaco-editor/react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const tabs = [
   { id: "description", label: "Description", icon: FileText },
@@ -46,6 +48,61 @@ const ProblemDetail = () => {
   const [activeTestCaseIndex, setActiveTestCaseIndex] = useState(0);
   const [activeResultTabIndex, setActiveResultTabIndex] = useState(0);
   const [submissionResult, setSubmissionResult] = useState<any>(null);
+
+  const [outputHeight, setOutputHeight] = useState(256);
+  const isDraggingRef = useRef(false);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDraggingRef.current) return;
+
+      // Calculate new height:
+      // When dragging UP, e.movementY is negative, so height increases
+      // When dragging DOWN, e.movementY is positive, so height decreases
+      setOutputHeight((prev) => {
+        const newHeight = prev - e.movementY;
+        // Restrict between 100px and 80% of window height
+        return Math.max(40, Math.min(newHeight, window.innerHeight * 0.8));
+      });
+    };
+
+    const handleMouseUp = (e: MouseEvent) => {
+      // Only release on left-click up, or if dragging somehow
+      if (isDraggingRef.current && (e.button === 0 || e.buttons === 0)) {
+        isDraggingRef.current = false;
+        document.body.style.cursor = 'default';
+        document.body.style.userSelect = 'auto';
+      }
+    };
+
+    // Prevent context menu globally *only while dragging*
+    const handleContextMenu = (e: MouseEvent) => {
+      if (isDraggingRef.current) {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("contextmenu", handleContextMenu);
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("contextmenu", handleContextMenu);
+    };
+  }, []);
+
+  const startDrag = (e: React.MouseEvent) => {
+    // Only allow drag on left click
+    if (e.button !== 0) return;
+
+    e.preventDefault();
+    isDraggingRef.current = true;
+
+    document.body.style.cursor = 'row-resize';
+    document.body.style.userSelect = 'none';
+  };
 
   const navigate = useNavigate();
   const [streak, setStreak] = useState(0);
@@ -286,8 +343,41 @@ const ProblemDetail = () => {
 
           <div className="flex-1 overflow-y-auto p-5">
             {activeTab === "description" && (
-              <div className="space-y-5 text-sm">
-                <div className="whitespace-pre-wrap text-foreground/90 leading-relaxed font-sans">{problem.description || "No description provided."}</div>
+              <div className="space-y-5 text-sm pb-8">
+                <div className="text-foreground/90 leading-relaxed font-sans">
+                  {problem.description ? (
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        h1: ({ node, ...props }) => <h1 className="text-2xl font-bold mt-6 mb-4 text-foreground" {...props} />,
+                        h2: ({ node, ...props }) => <h2 className="text-xl font-bold mt-5 mb-3 text-foreground" {...props} />,
+                        h3: ({ node, ...props }) => <h3 className="text-lg font-bold mt-4 mb-2 text-foreground" {...props} />,
+                        p: ({ node, ...props }) => <p className="mb-4 text-foreground/80 leading-relaxed" {...props} />,
+                        ul: ({ node, ...props }) => <ul className="list-disc pl-5 mb-4 space-y-1" {...props} />,
+                        ol: ({ node, ...props }) => <ol className="list-decimal pl-5 mb-4 space-y-1" {...props} />,
+                        li: ({ node, ...props }) => <li className="text-foreground/80" {...props} />,
+                        strong: ({ node, ...props }) => <strong className="font-semibold text-foreground" {...props} />,
+                        code: function Code({ node, inline, className, children, ...props }: any) {
+                          return inline ? (
+                            <code className="bg-muted text-foreground/90 px-1.5 py-0.5 rounded-md font-mono text-xs border border-border/50" {...props}>
+                              {children}
+                            </code>
+                          ) : (
+                            <div className="bg-[#1a1c23] border border-border/10 rounded-md p-3 my-4 overflow-x-auto">
+                              <code className="font-mono text-xs text-foreground/90 block whitespace-pre-wrap" {...props}>
+                                {children}
+                              </code>
+                            </div>
+                          );
+                        }
+                      }}
+                    >
+                      {problem.description}
+                    </ReactMarkdown>
+                  ) : (
+                    "No description provided."
+                  )}
+                </div>
 
                 {problem.dataset && (
                   <div className="glass-card p-4">
@@ -462,7 +552,7 @@ const ProblemDetail = () => {
             </span>
           </div>
 
-          <div className="flex-1 min-h-0">
+          <div className="flex-1 min-h-0 relative">
             <Editor
               height="100%"
               defaultLanguage="python"
@@ -482,8 +572,18 @@ const ProblemDetail = () => {
             />
           </div>
 
+          {/* Resizer Handle */}
+          <div
+            className="w-full h-1 bg-border/20 hover:bg-orange-500/50 cursor-row-resize flex-shrink-0 transition-colors z-10"
+            onMouseDown={startDrag}
+            title="Drag to resize"
+          />
+
           {/* Output / Test Cases Panel */}
-          <div className="border-t border-border/50 bg-[#0e1015] min-h-64 max-h-80 flex flex-col flex-shrink-0">
+          <div
+            className="border-t border-border/50 bg-[#0e1015] flex flex-col flex-shrink-0"
+            style={{ height: outputHeight }}
+          >
             {output !== null ? (
               <div className="flex flex-col h-full font-mono text-sm">
                 {/* Header */}
