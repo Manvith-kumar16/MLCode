@@ -55,7 +55,7 @@ const Problems = () => {
       const token = localStorage.getItem("token");
       const headers: Record<string, string> = {};
       if (token) headers["auth-token"] = token;
-      const res = await fetch("http://localhost:5001/api/problems", { headers });
+      const res = await fetch("https://mlcode-snkb.onrender.com/api/problems", { headers });
       if (!res.ok) throw new Error("Failed to fetch problems");
       return res.json();
     }

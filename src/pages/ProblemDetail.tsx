@@ -37,7 +37,7 @@ const ProblemDetail = () => {
   const { data: problem, isLoading } = useQuery({
     queryKey: ["problem", id],
     queryFn: async () => {
-      const res = await fetch(`http://localhost:5001/api/problems/${id}`);
+      const res = await fetch(`https://mlcode-snkb.onrender.com/api/problems/${id}`);
       if (!res.ok) throw new Error("Failed to fetch problem");
       return res.json();
     }
@@ -128,7 +128,7 @@ const ProblemDetail = () => {
       const token = localStorage.getItem("token");
       if (!token) return;
       try {
-        const response = await fetch("http://localhost:5001/api/auth/me", {
+        const response = await fetch("https://mlcode-snkb.onrender.com/api/auth/me", {
           headers: { "auth-token": token },
         });
         const data = await response.json();
@@ -149,7 +149,7 @@ const ProblemDetail = () => {
     if (!problem) return;
     setLoadingDiscussions(true);
     try {
-      const res = await fetch(`http://localhost:5001/api/discussions/${problem.problemId}`);
+      const res = await fetch(`https://mlcode-snkb.onrender.com/api/discussions/${problem.problemId}`);
       if (res.ok) {
         setDiscussions(await res.json());
       }
@@ -175,7 +175,7 @@ const ProblemDetail = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:5001/api/discussions", {
+      const res = await fetch("https://mlcode-snkb.onrender.com/api/discussions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -204,7 +204,7 @@ const ProblemDetail = () => {
     const token = localStorage.getItem("token");
     if (!token) return;
     try {
-      const res = await fetch(`http://localhost:5001/api/discussions/${commentId}`, {
+      const res = await fetch(`https://mlcode-snkb.onrender.com/api/discussions/${commentId}`, {
         method: "DELETE",
         headers: { "auth-token": token },
       });
@@ -236,7 +236,7 @@ const ProblemDetail = () => {
 
       const token = localStorage.getItem("token");
       if (token) {
-        fetch(`http://localhost:5001/api/submissions/problem/${problem.problemId}`, {
+        fetch(`https://mlcode-snkb.onrender.com/api/submissions/problem/${problem.problemId}`, {
           headers: { "auth-token": token }
         })
           .then(res => res.json())
@@ -287,7 +287,7 @@ const ProblemDetail = () => {
     setActiveResultTabIndex(0); // Reset tab when running new code
 
     try {
-      const res = await fetch(`http://localhost:5001/api/execute/${id}`, {
+      const res = await fetch(`https://mlcode-snkb.onrender.com/api/execute/${id}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code })
@@ -323,7 +323,7 @@ const ProblemDetail = () => {
     setOutput(null);
 
     try {
-      const res = await fetch(`http://localhost:5001/api/submissions/submit`, {
+      const res = await fetch(`https://mlcode-snkb.onrender.com/api/submissions/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -347,7 +347,7 @@ const ProblemDetail = () => {
 
         if (data.submission && data.submission.status === "Accepted") {
           try {
-            const distRes = await fetch(`http://localhost:5001/api/submissions/problem/${problem.problemId}/distribution`);
+            const distRes = await fetch(`https://mlcode-snkb.onrender.com/api/submissions/problem/${problem.problemId}/distribution`);
             if (distRes.ok) {
               const times = await distRes.json();
               if (times.length > 0) {

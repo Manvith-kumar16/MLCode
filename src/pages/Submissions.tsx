@@ -42,13 +42,13 @@ const Submissions = () => {
             if (!token) { navigate("/signin"); return; }
             try {
                 // Get current user ID first
-                const userRes = await fetch("http://localhost:5001/api/auth/me", {
+                const userRes = await fetch("https://mlcode-snkb.onrender.com/api/auth/me", {
                     headers: { "auth-token": token }
                 });
                 if (!userRes.ok) throw new Error("Failed to get user");
                 const userData = await userRes.json();
 
-                const subRes = await fetch(`http://localhost:5001/api/submissions/user/${userData._id}`, {
+                const subRes = await fetch(`https://mlcode-snkb.onrender.com/api/submissions/user/${userData._id}`, {
                     headers: { "auth-token": token }
                 });
                 if (!subRes.ok) throw new Error("Failed to fetch submissions");

@@ -34,7 +34,7 @@ const Leaderboard = () => {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const res = await fetch("http://localhost:5001/api/auth/leaderboard");
+        const res = await fetch("https://mlcode-snkb.onrender.com/api/auth/leaderboard");
         if (!res.ok) throw new Error("Failed to fetch leaderboard");
         setLeaderboardData(await res.json());
       } catch {

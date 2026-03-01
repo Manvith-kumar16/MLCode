@@ -43,7 +43,7 @@ const Profile = () => {
       const token = localStorage.getItem("token");
       if (!token) return;
       try {
-        const response = await fetch("http://localhost:5001/api/auth/me", {
+        const response = await fetch("https://mlcode-snkb.onrender.com/api/auth/me", {
           headers: { "auth-token": token },
         });
         const data = await response.json();
@@ -57,15 +57,15 @@ const Profile = () => {
           setUser(data);
 
           if (data._id) {
-            const statsRes = await fetch(`http://localhost:5001/api/submissions/stats/${data._id}`, { headers: { "auth-token": token } });
+            const statsRes = await fetch(`https://mlcode-snkb.onrender.com/api/submissions/stats/${data._id}`, { headers: { "auth-token": token } });
             if (statsRes.ok) {
               const statsData = await statsRes.json();
               setSubmissionStats(statsData.map((item: any) => ({ date: item._id, count: item.count })));
             }
-            const subsRes = await fetch(`http://localhost:5001/api/submissions/user/${data._id}`, { headers: { "auth-token": token } });
+            const subsRes = await fetch(`https://mlcode-snkb.onrender.com/api/submissions/user/${data._id}`, { headers: { "auth-token": token } });
             if (subsRes.ok) setRecentSubmissions(await subsRes.json());
 
-            const probRes = await fetch("http://localhost:5001/api/problems", { headers: { "auth-token": token } });
+            const probRes = await fetch("https://mlcode-snkb.onrender.com/api/problems", { headers: { "auth-token": token } });
             if (probRes.ok) {
               const probData = await probRes.json();
               const counts = { easy: 0, medium: 0, hard: 0, total: probData.length };
@@ -77,7 +77,7 @@ const Profile = () => {
             }
 
             // Fetch real rank
-            const rankRes = await fetch(`http://localhost:5001/api/auth/rank/${data._id}`, { headers: { "auth-token": token } });
+            const rankRes = await fetch(`https://mlcode-snkb.onrender.com/api/auth/rank/${data._id}`, { headers: { "auth-token": token } });
             if (rankRes.ok) {
               const { rank } = await rankRes.json();
               setUser((prev: any) => prev ? { ...prev, rank } : prev);

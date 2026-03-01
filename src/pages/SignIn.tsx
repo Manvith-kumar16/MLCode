@@ -22,7 +22,7 @@ const SignIn = () => {
   const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
     try {
       setIsLoading(true);
-      const response = await fetch("http://localhost:5001/api/auth/google", {
+      const response = await fetch("https://mlcode-snkb.onrender.com/api/auth/google", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,7 +55,7 @@ const SignIn = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5001/api/auth/signin', {
+      const response = await fetch('https://mlcode-snkb.onrender.com/api/auth/signin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

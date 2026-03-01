@@ -29,7 +29,7 @@ const EditProfile = () => {
             }
 
             try {
-                const response = await fetch("http://localhost:5001/api/auth/me", {
+                const response = await fetch("https://mlcode-snkb.onrender.com/api/auth/me", {
                     headers: { "auth-token": token },
                 });
                 const data = await response.json();
@@ -81,7 +81,7 @@ const EditProfile = () => {
         }
 
         try {
-            const response = await fetch("http://localhost:5001/api/auth/me", {
+            const response = await fetch("https://mlcode-snkb.onrender.com/api/auth/me", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

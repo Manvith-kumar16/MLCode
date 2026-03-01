@@ -53,7 +53,7 @@ export function AppSidebar() {
         const fetchUser = async () => {
             if (!token) return;
             try {
-                const res = await fetch("http://localhost:5001/api/auth/me", {
+                const res = await fetch("https://mlcode-snkb.onrender.com/api/auth/me", {
                     headers: { "auth-token": token },
                 });
                 if (res.ok) {

@@ -163,11 +163,11 @@ router.get('/leaderboard', async (req, res) => {
 // Google Sign In
 router.post('/google', async (req, res) => {
     try {
-        const { token } = req.body;
+        const { token: googleToken } = req.body;
         const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
         const ticket = await client.verifyIdToken({
-            idToken: token,
+            idToken: googleToken,
             audience: process.env.GOOGLE_CLIENT_ID,
         });
 
@@ -180,27 +180,21 @@ router.post('/google', async (req, res) => {
                 name,
                 email,
                 avatar: picture,
-                password: Math.random().toString(36).slice(-8), // Generate random password
-                socials: { github: "", linkedin: "", website: "" }
+                password: Math.random().toString(36).slice(-8),
+                socials: { github: '', linkedin: '', website: '' },
+                problemsSolved: { easy: 0, medium: 0, hard: 0 },
+                streak: { current: 0 },
+                badges: [],
+                points: 0,
+                bio: '',
+                location: '',
             });
             await user.save();
         }
 
-        const payload = {
-            user: {
-                id: user.id
-            }
-        };
-
-        jwt.sign(
-            payload,
-            process.env.JWT_SECRET,
-            { expiresIn: 360000 },
-            (err, token) => {
-                if (err) throw err;
-                res.json({ token });
-            }
-        );
+        // Use same JWT format as regular sign-in so verifyToken reads req.user._id correctly
+        const authToken = jwt.sign({ _id: user._id }, 'SECRET_KEY_SHOULD_BE_IN_ENV');
+        res.json({ token: authToken });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');

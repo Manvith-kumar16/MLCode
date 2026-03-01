@@ -20,7 +20,7 @@ const SignUp = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch('http://localhost:5001/api/auth/signup', {
+            const response = await fetch('https://mlcode-snkb.onrender.com/api/auth/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

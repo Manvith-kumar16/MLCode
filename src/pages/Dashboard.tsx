@@ -19,15 +19,15 @@ const Dashboard = () => {
         if (!token) { navigate("/signin"); return; }
         const headers = { "auth-token": token, "Content-Type": "application/json" };
 
-        const userRes = await fetch("http://localhost:5001/api/auth/me", { headers });
+        const userRes = await fetch("https://mlcode-snkb.onrender.com/api/auth/me", { headers });
         if (!userRes.ok) throw new Error("Failed to fetch user data");
         const userData = await userRes.json();
         setUser(userData);
 
-        const subRes = await fetch(`http://localhost:5001/api/submissions/user/${userData._id}`, { headers });
+        const subRes = await fetch(`https://mlcode-snkb.onrender.com/api/submissions/user/${userData._id}`, { headers });
         if (subRes.ok) setSubmissions(await subRes.json());
 
-        const statsRes = await fetch(`http://localhost:5001/api/submissions/stats/${userData._id}`, { headers });
+        const statsRes = await fetch(`https://mlcode-snkb.onrender.com/api/submissions/stats/${userData._id}`, { headers });
         if (statsRes.ok) {
           const statsData = await statsRes.json();
           setHeatmapData(statsData.map((s: any) => ({ date: s._id, count: s.count })));
