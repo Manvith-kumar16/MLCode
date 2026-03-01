@@ -49,6 +49,10 @@ const ProblemDetail = () => {
   const [activeResultTabIndex, setActiveResultTabIndex] = useState(0);
   const [submissionResult, setSubmissionResult] = useState<any>(null);
   const [revealedHints, setRevealedHints] = useState<number[]>([]);
+  const [runtimeDistribution, setRuntimeDistribution] = useState<number[]>([]);
+  const [beatsPercent, setBeatsPercent] = useState<number>(0);
+  const [userBin, setUserBin] = useState<number>(-1);
+  const [chartMinMax, setChartMinMax] = useState<{ min: number, max: number } | null>(null);
 
   const [outputHeight, setOutputHeight] = useState(256);
   const isDraggingRef = useRef(false);
@@ -247,6 +251,46 @@ const ProblemDetail = () => {
         setSubmissionResult(data.submission);
         // Also show the output panel so they see the logs if they want
         setOutput(data.testResults);
+
+        if (data.submission.status === "Accepted") {
+          try {
+            const distRes = await fetch(`http://localhost:5001/api/submissions/problem/${problem.problemId}/distribution`);
+            if (distRes.ok) {
+              const times = await distRes.json();
+              if (times.length > 0) {
+                const myTime = data.submission.executionTime;
+                const slowerCount = times.filter((t: number) => t > myTime).length;
+                const pct = ((slowerCount + 0.5) / times.length) * 100;
+                setBeatsPercent(pct > 99.9 ? 99.9 : pct);
+
+                const minTime = Math.min(...times, myTime) * 0.9;
+                const maxTime = Math.max(...times, myTime, minTime + 50) * 1.1;
+                const range = maxTime - minTime;
+                const binSize = range / 40;
+
+                const bins = new Array(40).fill(0);
+                times.forEach((t: number) => {
+                  let binIdx = Math.floor((t - minTime) / binSize);
+                  if (binIdx >= 40) binIdx = 39;
+                  if (binIdx < 0) binIdx = 0;
+                  bins[binIdx]++;
+                });
+
+                let myIdx = Math.floor((myTime - minTime) / binSize);
+                if (myIdx >= 40) myIdx = 39;
+                if (myIdx < 0) myIdx = 0;
+                if (bins[myIdx] === 0) bins[myIdx] = 1;
+
+                setUserBin(myIdx);
+                setChartMinMax({ min: minTime, max: maxTime });
+
+                const maxCount = Math.max(...bins);
+                const heights = bins.map(count => count === 0 ? 0 : Math.max(8, (count / maxCount) * 100));
+                setRuntimeDistribution(heights);
+              }
+            }
+          } catch (e) { }
+        }
       } else {
         setOutput({ status: "failed", message: "Submission Failed", cases: [], summary: data.error || data.message });
       }
@@ -510,7 +554,7 @@ const ProblemDetail = () => {
                           <span className="text-3xl font-bold text-foreground">{submissionResult.executionTime} <span className="text-lg font-medium text-muted-foreground">ms</span></span>
                         </div>
                         <div className="text-sm font-medium text-emerald-500 flex items-center gap-1">
-                          Beats 56.48% <span>🚀</span>
+                          Beats {beatsPercent > 0 ? beatsPercent.toFixed(2) : "56.48"}% <span>🚀</span>
                         </div>
                       </div>
 
@@ -529,21 +573,33 @@ const ProblemDetail = () => {
                       </div>
                     </div>
 
-                    {/* Mocked Histogram */}
-                    <div className="w-full h-40 flex items-end justify-center gap-1.5 mb-12 px-6 py-6 bg-[#0e1015] rounded-xl border border-border/10">
-                      {[
-                        8, 14, 10, 18, 22, 14, 22, 10, 85, 12,
-                        10, 14, 20, 16, 12, 14, 10, 8, 16, 22,
-                        24, 20, 16, 20, 24, 26, 18, 14, 22, 24,
-                        16, 10, 14, 10, 18, 14, 10, 14, 20, 12
-                      ].map((height, i) => (
-                        <div
-                          key={i}
-                          className={`w-3.5 rounded-t-[4px] transition-all duration-300 ${i === 8 ? 'bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.4)]' : 'bg-[#272a33] hover:bg-[#343844] cursor-pointer'}`}
-                          style={{ height: `${height}%` }}
-                          title={i === 8 ? "Your Runtime" : `Runtime: ${Math.floor(Math.random() * 50) + 20}ms`}
-                        />
-                      ))}
+                    {/* Execution Histogram */}
+                    <div className="w-full mb-12 relative">
+                      <div className="w-full flex items-end justify-center gap-1.5 px-6 pt-6 pb-2 bg-[#0e1015] rounded-t-xl border border-border/10 border-b-0 h-40">
+                        {runtimeDistribution.length > 0 ? (
+                          runtimeDistribution.map((height, i) => (
+                            <div
+                              key={i}
+                              className={`w-3.5 rounded-t-[4px] transition-all duration-300 ${i === userBin ? 'bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.6)]' : 'bg-[#272a33] hover:bg-[#343844] cursor-pointer'}`}
+                              style={{ height: `${height}%` }}
+                              title={i === userBin ? `Your Runtime: ${submissionResult.executionTime}ms` : `Runtime Bucket`}
+                            />
+                          ))
+                        ) : (
+                          <div className="text-sm text-muted-foreground m-auto">Generating Distribution Graph...</div>
+                        )}
+                      </div>
+                      {/* X-Axis Labels */}
+                      {chartMinMax && runtimeDistribution.length > 0 && (
+                        <div className="w-full h-8 flex items-center justify-between text-xs text-muted-foreground px-6 bg-[#0e1015] rounded-b-xl border border-border/10 font-mono">
+                          {[0, 1, 2, 3, 4, 5, 6].map(tick => {
+                            const val = chartMinMax.min + (chartMinMax.max - chartMinMax.min) * (tick / 6);
+                            return (
+                              <span key={tick}>{Math.round(val)}ms</span>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
 
                     {/* Submitted Code Readonly */}

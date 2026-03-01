@@ -138,4 +138,19 @@ router.get('/problem/:problemId', verify, async (req, res) => {
     }
 });
 
+// Get runtime distribution for a specific problem
+router.get('/problem/:problemId/distribution', async (req, res) => {
+    try {
+        const submissions = await Submission.find({
+            problemId: req.params.problemId,
+            status: "Accepted"
+        }).select('executionTime');
+
+        const times = submissions.map(s => s.executionTime);
+        res.json(times);
+    } catch (err) {
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+
 module.exports = router;
