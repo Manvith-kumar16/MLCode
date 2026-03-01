@@ -1,4 +1,4 @@
-import { Code2, LayoutDashboard, Trophy, Home, User, LogOut } from "lucide-react";
+import { Code2, LayoutDashboard, Trophy, Home, User, LogOut, History } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import {
     Sidebar,
@@ -36,6 +36,11 @@ const items = [
         title: "Leaderboard",
         url: "/leaderboard",
         icon: Trophy,
+    },
+    {
+        title: "Submissions",
+        url: "/submissions",
+        icon: History,
     },
 ];
 

@@ -122,6 +122,21 @@ router.put('/me', verify, async (req, res) => {
     }
 });
 
+// Get a user's real global rank by counting users with more points
+router.get('/rank/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const user = await User.findById(userId).select('points');
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        // Rank = number of users with strictly more points + 1
+        const higherCount = await User.countDocuments({ points: { $gt: user.points } });
+        res.json({ rank: higherCount + 1 });
+    } catch (err) {
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
 // Get Leaderboard (Top 10 by points)
 router.get('/leaderboard', async (req, res) => {
     try {

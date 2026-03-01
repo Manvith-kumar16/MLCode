@@ -75,6 +75,13 @@ const Profile = () => {
               });
               setTotalProblems(counts);
             }
+
+            // Fetch real rank
+            const rankRes = await fetch(`http://localhost:5001/api/auth/rank/${data._id}`, { headers: { "auth-token": token } });
+            if (rankRes.ok) {
+              const { rank } = await rankRes.json();
+              setUser((prev: any) => prev ? { ...prev, rank } : prev);
+            }
           }
         }
       } catch (error) {
@@ -102,16 +109,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-[#0e1015] text-foreground">
-      {/* Hero Banner */}
-      <div className="relative h-28 w-full overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-600/30 via-primary/20 to-purple-700/20" />
-        <div className="absolute inset-0" style={{ backgroundImage: "radial-gradient(circle at 20% 50%, rgba(255,140,0,0.15) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(139,92,246,0.15) 0%, transparent 50%)" }} />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0e1015]/60 to-[#0e1015]" />
-        {/* Subtle grid pattern */}
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
-      </div>
-
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 -mt-14 pb-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 pt-8 pb-12">
         <div className="grid lg:grid-cols-[300px_1fr] gap-8 items-start">
 
           {/* ===== LEFT COLUMN ===== */}
@@ -121,9 +119,8 @@ const Profile = () => {
             <div className="relative rounded-2xl border border-border/10 bg-[#1a1c23]/80 backdrop-blur-sm overflow-hidden">
               <div className="px-6 pt-8 pb-6 flex flex-col items-center text-center">
                 {/* Avatar */}
-                <div className="relative mb-4 group">
-                  <div className="absolute -inset-1 rounded-full bg-gradient-to-br from-orange-500 via-primary to-purple-500 opacity-70 blur-sm group-hover:opacity-100 transition-opacity" />
-                  <div className="relative h-28 w-28 rounded-full overflow-hidden ring-2 ring-background">
+                <div className="relative mb-4">
+                  <div className="relative h-28 w-28 rounded-full overflow-hidden ring-2 ring-border/20">
                     {user.avatar
                       ? <img src={user.avatar} alt={user.name} className="h-full w-full object-cover" />
                       : <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-orange-500 to-primary text-4xl font-bold text-white">{user.name.charAt(0).toUpperCase()}</div>
@@ -138,7 +135,7 @@ const Profile = () => {
                 {/* Points / Rank Pills */}
                 <div className="flex items-center gap-2 mt-4 flex-wrap justify-center">
                   <span className="text-xs bg-primary/10 text-primary border border-primary/20 px-3 py-1 rounded-full font-semibold">{user.points || 0} pts</span>
-                  <span className="text-xs bg-purple-500/10 text-purple-400 border border-purple-500/20 px-3 py-1 rounded-full font-semibold">Rank #{user.rank || "—"}</span>
+                  <span className="text-xs bg-purple-500/10 text-purple-400 border border-purple-500/20 px-3 py-1 rounded-full font-semibold">Rank #{user.rank != null ? user.rank : "—"}</span>
                 </div>
 
                 <Button
@@ -303,7 +300,7 @@ const Profile = () => {
             {/* Recent Submissions */}
             <div className="rounded-2xl border border-border/10 bg-[#1a1c23]/80 p-6">
               <h3 className="font-semibold text-sm text-foreground/80 mb-4">Recent Submissions</h3>
-              <RecentSubmissions submissions={recentSubmissions} />
+              <RecentSubmissions submissions={recentSubmissions.slice(0, 5)} />
             </div>
 
           </motion.div>
