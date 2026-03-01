@@ -1,17 +1,22 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 
 const Layout = () => {
+  const location = useLocation();
+  const isProblemDetail = location.pathname.startsWith('/problem/');
+
   return (
     <SidebarProvider>
-      <AppSidebar />
+      {!isProblemDetail && <AppSidebar />}
       <main className="w-full">
-        <div className="flex items-center p-4 md:hidden">
-          <SidebarTrigger />
-        </div>
-        <Navbar />
+        {!isProblemDetail && (
+          <div className="flex items-center p-4 md:hidden">
+            <SidebarTrigger />
+          </div>
+        )}
+        {!isProblemDetail && <Navbar />}
         <Outlet />
       </main>
     </SidebarProvider>

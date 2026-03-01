@@ -4,6 +4,7 @@ import { Brain, Code2, Trophy, TrendingUp, Zap, Users, ArrowRight, CheckCircle2 
 import { Button } from "@/components/ui/button";
 import heroBg from "@/assets/hero-bg.jpg";
 import Navbar from "@/components/Navbar";
+import { InteractiveGlobe } from "@/components/ui/interactive-globe";
 
 const features = [
   { icon: Code2, title: "ML Problem Sets", desc: "150+ curated machine learning challenges across classification, regression, NLP, and computer vision" },
@@ -26,10 +27,12 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      {/* Hero */}
-      <section className="relative overflow-hidden pt-10">
+      {/* Combined Hero */}
+      <section className="relative overflow-hidden pt-4 pb-16 lg:pt-8 lg:pb-20">
+
+
         <div
-          className="absolute inset-0 opacity-20"
+          className="absolute inset-0 opacity-10"
           style={{
             backgroundImage: `url(${heroBg})`,
             backgroundSize: "cover",
@@ -39,44 +42,64 @@ const Index = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-background/0 via-background/80 to-background" />
 
-        {/* Purple/Blue Glow Effect */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-[30%] left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-primary/20 blur-[100px] rounded-full opacity-50 pointer-events-none" />
+        {/* Ambient glow matching primary */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] bg-primary/10 blur-[120px] rounded-full opacity-50" />
+          <div className="absolute top-[20%] -left-[10%] w-[600px] h-[600px] bg-primary/5 blur-[100px] rounded-full opacity-50" />
         </div>
 
-        <div className="relative mx-auto max-w-7xl px-4 py-24 sm:py-32 lg:py-40 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="max-w-4xl mx-auto flex flex-col items-center"
-          >
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary shadow-lg shadow-primary/10">
-              <Zap className="h-4 w-4" />
-              The #1 Platform for ML Practice
-            </div>
+        <div className="relative mx-auto max-w-7xl px-4">
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-8 min-h-[500px]">
+            {/* Left side text */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="flex-1 flex flex-col justify-center items-center lg:items-start text-center lg:text-left z-10"
+            >
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary shadow-lg shadow-primary/10">
+                <Zap className="h-4 w-4" />
+                The #1 Platform for ML Practice
+              </div>
 
-            <h1 className="mb-8 text-5xl font-black leading-tight tracking-tight sm:text-6xl lg:text-7xl bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-white/60">
-              Master <span className="text-primary">Machine Learning</span> <br /> Through Practice
-            </h1>
+              <h1 className="mb-6 text-5xl font-black leading-tight tracking-tight sm:text-6xl lg:text-7xl bg-clip-text text-transparent bg-gradient-to-br from-white via-white to-white/60">
+                Master <span className="text-primary">Machine Learning</span> <br /> Through Practice
+              </h1>
 
-            <p className="mb-10 max-w-2xl text-lg sm:text-xl text-muted-foreground leading-relaxed">
-              Solve real-world ML problems, get instant feedback with industry-standard metrics, and compete with practitioners worldwide.
-            </p>
+              <p className="mb-10 max-w-xl text-lg sm:text-xl text-muted-foreground leading-relaxed">
+                Solve real-world ML problems, get instant feedback with industry-standard metrics, and compete with practitioners worldwide. Drag the globe to explore.
+              </p>
 
-            <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-              <Link to="/problems" className="w-full sm:w-auto">
-                <Button size="lg" className="gap-2 text-base font-semibold px-8 h-12 w-full sm:w-auto shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all">
-                  Start Practicing <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Link to="/leaderboard" className="w-full sm:w-auto">
-                <Button variant="outline" size="lg" className="gap-2 text-base border-border/50 hover:bg-accent/50 h-12 w-full sm:w-auto backdrop-blur-sm">
-                  View Leaderboard
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
+              <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+                <Link to="/problems" className="w-full sm:w-auto">
+                  <Button size="lg" className="gap-2 text-base font-semibold px-8 h-12 w-full sm:w-auto shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all">
+                    Start Practicing <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </Link>
+                <Link to="/leaderboard" className="w-full sm:w-auto">
+                  <Button variant="outline" size="lg" className="gap-2 text-base border-border/50 hover:bg-accent/50 h-12 w-full sm:w-auto backdrop-blur-sm">
+                    View Leaderboard
+                  </Button>
+                </Link>
+              </div>
+            </motion.div>
+
+            {/* Right side Globe */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, delay: 0.2 }}
+              className="flex-1 relative flex items-center justify-center w-full min-h-[400px] lg:min-h-[600px] z-10"
+            >
+              {/* Decorative Rings */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] aspect-square border border-primary/10 rounded-full animate-[spin_60s_linear_infinite] pointer-events-none" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] aspect-square border border-primary/20 rounded-full animate-[spin_40s_linear_infinite_reverse] pointer-events-none" />
+
+              <div className="absolute inset-0 flex items-center justify-center">
+                <InteractiveGlobe size={600} className="!w-full !h-auto max-w-[600px] aspect-square" />
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
@@ -100,6 +123,7 @@ const Index = () => {
           </div>
         </div>
       </section>
+
 
       {/* Features */}
       <section className="mx-auto max-w-7xl px-4 py-20">

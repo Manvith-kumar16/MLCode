@@ -4,6 +4,8 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/auth');
 const submissionRoutes = require('./routes/submissions');
+const problemRoutes = require('./routes/problems');
+const executeRoutes = require('./routes/execute');
 
 dotenv.config();
 
@@ -22,6 +24,8 @@ mongoose.connect(process.env.MONGO_URI)
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/submissions', submissionRoutes);
+app.use('/api/problems', problemRoutes);
+app.use('/api/execute', executeRoutes);
 
 app.get('/', (req, res) => {
     res.send('ML Code API is running');

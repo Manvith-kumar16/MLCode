@@ -2,11 +2,22 @@ import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Search, Filter, CheckCircle2, Clock, Minus } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { problems, type Difficulty, type MLTopic, type ProblemStatus } from "@/data/problems";
+import { useQuery } from "@tanstack/react-query";
+import { type Difficulty, type MLTopic, type ProblemStatus } from "@/data/problems";
 import DifficultyBadge from "@/components/DifficultyBadge";
 
 const topics: MLTopic[] = ["Classification", "Regression", "NLP", "Computer Vision", "Clustering", "Deep Learning", "Feature Engineering", "Time Series", "Recommender Systems", "Reinforcement Learning"];
 const difficulties: Difficulty[] = ["Easy", "Medium", "Hard"];
+
+interface ProblemData {
+  _id: string;
+  problemId: string;
+  title: string;
+  difficulty: Difficulty;
+  category: string;
+  acceptance?: number;
+  status?: ProblemStatus;
+}
 
 const StatusIcon = ({ status }: { status: ProblemStatus }) => {
   if (status === "solved") return <CheckCircle2 className="h-4 w-4 text-easy" />;
@@ -17,16 +28,25 @@ const StatusIcon = ({ status }: { status: ProblemStatus }) => {
 const Problems = () => {
   const [search, setSearch] = useState("");
   const [diffFilter, setDiffFilter] = useState<Difficulty | "All">("All");
-  const [topicFilter, setTopicFilter] = useState<MLTopic | "All">("All");
+  const [topicFilter, setTopicFilter] = useState<string>("All");
+
+  const { data: problems = [], isLoading } = useQuery({
+    queryKey: ["problems"],
+    queryFn: async () => {
+      const res = await fetch("http://localhost:5001/api/problems");
+      if (!res.ok) throw new Error("Failed to fetch problems");
+      return res.json();
+    }
+  });
 
   const filtered = useMemo(() => {
-    return problems.filter((p) => {
+    return problems.filter((p: ProblemData) => {
       if (search && !p.title.toLowerCase().includes(search.toLowerCase())) return false;
       if (diffFilter !== "All" && p.difficulty !== diffFilter) return false;
-      if (topicFilter !== "All" && !p.topics.includes(topicFilter)) return false;
+      if (topicFilter !== "All" && p.category !== topicFilter) return false;
       return true;
-    });
-  }, [search, diffFilter, topicFilter]);
+    }).sort((a, b) => parseInt(a.problemId) - parseInt(b.problemId));
+  }, [search, diffFilter, topicFilter, problems]);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8">
@@ -50,7 +70,7 @@ const Problems = () => {
           {["All", ...difficulties].map((d) => (
             <button
               key={d}
-              onClick={() => setDiffFilter(d as any)}
+              onClick={() => setDiffFilter(d as Difficulty | "All")}
               className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${diffFilter === d ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:text-foreground border border-border/50"
                 }`}
             >
@@ -65,7 +85,7 @@ const Problems = () => {
         {["All", ...topics].map((t) => (
           <button
             key={t}
-            onClick={() => setTopicFilter(t as any)}
+            onClick={() => setTopicFilter(t)}
             className={`px-2.5 py-1 rounded-full text-xs transition-colors ${topicFilter === t ? "bg-primary/20 text-primary border border-primary/30" : "bg-card text-muted-foreground hover:text-foreground border border-border/50"
               }`}
           >
@@ -87,25 +107,27 @@ const Problems = () => {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((p) => (
-              <tr key={p.id} className="border-b border-border/30 last:border-0 hover:bg-accent/50 transition-colors">
+            {isLoading ? (
+              <tr>
+                <td colSpan={5} className="py-12 text-center text-muted-foreground">Loading problems...</td>
+              </tr>
+            ) : filtered.map((p: ProblemData) => (
+              <tr key={p._id} className="border-b border-border/30 last:border-0 hover:bg-accent/50 transition-colors">
                 <td className="px-4 py-3">
-                  <StatusIcon status={p.status} />
+                  <StatusIcon status={p.status || "unsolved"} />
                 </td>
                 <td className="px-4 py-3">
-                  <Link to={`/problem/${p.id}`} className="font-medium text-foreground hover:text-primary transition-colors">
-                    {p.id}. {p.title}
+                  <Link to={`/problem/${p.problemId}`} className="font-medium text-foreground hover:text-primary transition-colors">
+                    {p.problemId}. {p.title}
                   </Link>
                 </td>
                 <td className="px-4 py-3 hidden sm:table-cell">
                   <div className="flex gap-1 flex-wrap">
-                    {p.topics.map((t) => (
-                      <span key={t} className="text-xs text-muted-foreground bg-accent px-1.5 py-0.5 rounded">{t}</span>
-                    ))}
+                    <span className="text-xs text-muted-foreground bg-accent px-1.5 py-0.5 rounded">{p.category || "General"}</span>
                   </div>
                 </td>
                 <td className="px-4 py-3"><DifficultyBadge difficulty={p.difficulty} /></td>
-                <td className="px-4 py-3 hidden md:table-cell text-right text-sm text-muted-foreground">{p.acceptance}%</td>
+                <td className="px-4 py-3 hidden md:table-cell text-right text-sm text-muted-foreground">{p.acceptance || "N/A"}</td>
               </tr>
             ))}
           </tbody>
