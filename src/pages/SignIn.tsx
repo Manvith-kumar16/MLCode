@@ -3,12 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Brain, Mail, Lock, Loader2, ArrowRight, Sparkles, Code2, BarChart3, Trophy } from "lucide-react";
 import { toast } from "sonner";
-import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 
 const features = [
-  { icon: Code2,    label: "Real-world ML Problems",   desc: "Curated challenges across 10+ ML topics" },
-  { icon: BarChart3, label: "Track Your Progress",      desc: "Heatmaps, streaks, and detailed stats" },
-  { icon: Trophy,   label: "Compete Globally",          desc: "Live leaderboard with global rankings" },
+  { icon: Code2, label: "Real-world ML Problems", desc: "Curated challenges across 10+ ML topics" },
+  { icon: BarChart3, label: "Track Your Progress", desc: "Heatmaps, streaks, and detailed stats" },
+  { icon: Trophy, label: "Compete Globally", desc: "Live leaderboard with global rankings" },
 ];
 
 const SignIn = () => {
@@ -16,27 +15,6 @@ const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
-    try {
-      setIsLoading(true);
-      const response = await fetch("https://mlcode-snkb.onrender.com/api/auth/google", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: credentialResponse.credential }),
-      });
-      const text = await response.text();
-      const data = JSON.parse(text);
-      if (!response.ok) throw new Error(data.message || "Google Sign In Failed");
-      localStorage.setItem("token", data.token);
-      toast.success("Signed in successfully!");
-      navigate("/profile");
-    } catch (error: any) {
-      toast.error(error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -195,24 +173,6 @@ const SignIn = () => {
                   : <><span>Sign In</span><ArrowRight className="h-4 w-4" /></>}
               </button>
             </form>
-
-            {/* Divider */}
-            <div className="flex items-center gap-3 my-5">
-              <div className="flex-1 h-px bg-border/20" />
-              <span className="text-xs text-muted-foreground font-medium">OR CONTINUE WITH</span>
-              <div className="flex-1 h-px bg-border/20" />
-            </div>
-
-            {/* Google */}
-            <div className="flex justify-center">
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={() => toast.error("Google Sign In Failed")}
-                theme="filled_black"
-                size="large"
-                width="320"
-              />
-            </div>
 
             {/* Sign up link */}
             <p className="text-center text-sm text-muted-foreground mt-6">
