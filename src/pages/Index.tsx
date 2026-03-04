@@ -15,13 +15,6 @@ const features = [
   { icon: Brain, title: "Learn by Doing", desc: "Structured learning paths from basic regression to advanced deep learning architectures" },
 ];
 
-const stats = [
-  { value: "150+", label: "ML Problems" },
-  { value: "50K+", label: "Submissions" },
-  { value: "10K+", label: "Users" },
-  { value: "95%", label: "Satisfaction" },
-];
-
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
@@ -98,26 +91,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="border-y border-border/50 bg-card/30">
-        <div className="mx-auto max-w-7xl px-4 py-12">
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-            {stats.map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="text-center"
-              >
-                <div className="text-3xl font-black text-primary">{stat.value}</div>
-                <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
 
       {/* Features */}
