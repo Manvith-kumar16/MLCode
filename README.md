@@ -1,7 +1,8 @@
 <div align="center">
 
-<img src="public/ML Code LOGO.png" alt="ML Code Logo" width="150" />
+<img src="public/ML Code LOGO.png" alt="ML Code Logo" width="250" />
 
+---
 <!-- # ML Code -->
 
 ### The LeetCode for Machine Learning Engineers
