@@ -141,7 +141,7 @@ git clone https://github.com/Manvith-kumar16/MLCode.git
 cd MLCode
 ```
 
-### 2. Set up the Backend
+### 2. Set up the  Backend
 
 ```bash
 cd server
