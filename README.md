@@ -49,7 +49,7 @@
 
 ---
 
-## 🏗️ Tech Stack
+## 🏗️  Tech Stack
 
 ### Frontend
 | Technology | Purpose |
